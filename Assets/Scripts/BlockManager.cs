@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
+using Random = UnityEngine.Random;
 
 public class BlockManager : MonoBehaviour
 {
@@ -18,7 +20,7 @@ public class BlockManager : MonoBehaviour
     private bool _clicked = false;
 
     private string lastBlockTag; // ?????????????????tag
-
+    
     private void Start()
     {
         blockTags = new List<string>();
@@ -35,6 +37,11 @@ public class BlockManager : MonoBehaviour
                 Vector3 spawnPosition = new Vector3(col-2f, row, 2); // ????????????λ??
                 GameObject randomBlockPrefab = GetRandomBlockPrefab();
                 GameObject block = Instantiate(randomBlockPrefab, spawnPosition, Quaternion.identity);
+                if (block.TryGetComponent(out CubeHover cHover))
+                {
+                    // Listen to hover event on the element
+                    cHover.onHoverEnter += HandelMotionHover;
+                }
                 blocks.Add(block);
                 blockTags.Add(block.tag);
                 lastBlockTag = block.tag;
@@ -67,16 +74,44 @@ public class BlockManager : MonoBehaviour
     /// <summary>
     /// Will be triggered when a hand hovers on an element
     /// </summary>
-    /// <param name="index">indicates which hand, 0 = left, 1=right</param>
-    private void HandelMotionHover(HandEnum hand)
+    /// <param name="target">the game object that are hovered</param>
+    /// <param name="hand">indicates which hand, see the enum</param>
+    private void HandelMotionHover(GameObject target, HandEnum hand)
     {
-        
+        if(!_clicked)
+        {
+            _clicked = true;
+            _blockToDelete = target;
+        }
+        else if(_blockToDelete != target)
+        {
+            _clicked = false;
+            if(_blockToDelete.tag == target.tag)
+            {
+                AddBlocksToFall(_blockToDelete);
+                AddBlocksToFall(target);
+                if(_blocksToFall.Contains(_blockToDelete) || _blocksToFall.Contains(target))
+                {
+                    _blocksToFall.Add(_blocksToFall[_blocksToFall.Count - 1]);
+                }
+
+                if (_blocksToFall.Count != 0) StartFalling();
+                //Debug.Log(_blocksToFall.Count);
+
+                _blockToDelete.SetActive(false);
+                target.SetActive(false);
+
+
+                //Destroy(clickedObject);
+                //Destroy(_blockToDelete);
+            }
+        }
     }
 
     /// <summary>
     /// Will be triggered when a hand no longer hovers on an element
     /// </summary>
-    /// <param name="index">indicates which hand, 0 = left, 1=right</param>
+    /// <param name="hand">indicates which hand, see the enum</param>
     private void HandelMotionExit(HandEnum hand)
     {
         
