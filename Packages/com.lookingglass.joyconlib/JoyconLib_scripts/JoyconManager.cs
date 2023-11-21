@@ -6,8 +6,7 @@ using UnityEngine;
 using System;
 public class JoyconManager: MonoBehaviour
 {
-
-    // Settings accessible via Unity
+	// Settings accessible via Unity
     public bool EnableIMU = true;
     public bool EnableLocalize = true;
 
