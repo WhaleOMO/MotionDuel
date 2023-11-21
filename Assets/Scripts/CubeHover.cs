@@ -15,7 +15,8 @@ public class CubeHover : MonoBehaviour
     private bool[] isHovering;
     
     public event Action<GameObject, HandEnum> onHoverEnter;
-    
+    public event Action<GameObject, HandEnum> onHoverStay; 
+
     private void Start()
     {
         pipeServer = GameObject.FindObjectOfType(typeof(PipeServer)).GetComponent<PipeServer>();
@@ -52,7 +53,11 @@ public class CubeHover : MonoBehaviour
                 // mRenderer.material.color = Color.cyan; // for debug
                 isHovering[(int)whichHand] = true;
                 onHoverEnter?.Invoke(gameObject, whichHand);
+                mRenderer.material.color *= 5f;
+                return;
             }
+            
+            onHoverStay?.Invoke(gameObject, whichHand);
         }
         else
         {
@@ -60,6 +65,7 @@ public class CubeHover : MonoBehaviour
             {
                 // mRenderer.material.color = Color.white;  
                 isHovering[(int)whichHand] = false;
+                mRenderer.material.color /= 5f;
                 // On Hover Exit
             }
         }
