@@ -1,22 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class BlockManager : MonoBehaviour
 {
-    public GameObject[] blockPrefabs; // �����Ԥ��������
-    public int rows = 5; // ����
-    public int columns = 5; // ����
+    public GameObject[] blockPrefabs; // ??????????????
+    public int rows = 5; // ????
+    public int columns = 5; // ????
     public List<GameObject> blocks;
     public float moveSpeed = 1f;
     public float moveDistance = 1f;
 
-    private List<string> blockTags; // ���ڼ�¼ÿ��λ�õķ����tag
+    private List<string> blockTags; // ?????????λ???????tag
     private GameObject _blockToDelete;
     private List<GameObject> _blocksToFall;
     private bool _clicked = false;
 
-    private string lastBlockTag; // ����׷����һ�������tag
+    private string lastBlockTag; // ?????????????????tag
 
     private void Start()
     {
@@ -31,7 +32,7 @@ public class BlockManager : MonoBehaviour
         {
             for (int col = 0; col < columns; col++)
             {
-                Vector3 spawnPosition = new Vector3(col-2f, row, 2); // ������������λ��
+                Vector3 spawnPosition = new Vector3(col-2f, row, 2); // ????????????λ??
                 GameObject randomBlockPrefab = GetRandomBlockPrefab();
                 GameObject block = Instantiate(randomBlockPrefab, spawnPosition, Quaternion.identity);
                 blocks.Add(block);
@@ -45,7 +46,7 @@ public class BlockManager : MonoBehaviour
     {
         GameObject randomBlockPrefab = blockPrefabs[Random.Range(0, blockPrefabs.Length)];
 
-        // ȷ����һ�������tag��ͬ����һ������
+        // ?????????????tag??????????????
         while (randomBlockPrefab.tag == lastBlockTag)
         {
             randomBlockPrefab = blockPrefabs[Random.Range(0, blockPrefabs.Length)];
@@ -56,21 +57,37 @@ public class BlockManager : MonoBehaviour
 
     private void Update()
     {
-
-        // �����ҵĵ��
+        // ?????????
         if (Input.GetMouseButtonDown(0))
         {
             HandleClick();
         }
     }
 
+    /// <summary>
+    /// Will be triggered when a hand hovers on an element
+    /// </summary>
+    /// <param name="index">indicates which hand, 0 = left, 1=right</param>
+    private void HandelMotionHover(HandEnum hand)
+    {
+        
+    }
+
+    /// <summary>
+    /// Will be triggered when a hand no longer hovers on an element
+    /// </summary>
+    /// <param name="index">indicates which hand, 0 = left, 1=right</param>
+    private void HandelMotionExit(HandEnum hand)
+    {
+        
+    }
 
     void FallBlock(GameObject block)
     {
-        // ��ȡ��һ��λ��
+        // ????????λ??
         Vector3 nextPosition = block.transform.position + Vector3.down;
 
-        // �ƶ����鵽��һ��λ��
+        // ??????鵽?????λ??
         block.transform.position = nextPosition;
     }
 
@@ -128,7 +145,7 @@ public class BlockManager : MonoBehaviour
         {
             GameObject aboveBlock = hit.collider.gameObject;
             _blocksToFall.Add(aboveBlock);
-            AddBlocksToFall(aboveBlock);// ����Ϸ�����ײ�壬�����Ϸ��ķ���
+            AddBlocksToFall(aboveBlock);// ????????????壬????????????
         }
         else
         {
@@ -148,7 +165,7 @@ public class BlockManager : MonoBehaviour
         StartCoroutine(MoveObjectsSmoothCoroutine());
     }
 
-    // Э�̣���֡�ƶ�����
+    // Э?????????????
     IEnumerator MoveObjectsSmoothCoroutine()
     {
         float elapsedTime = 0f;
@@ -168,7 +185,7 @@ public class BlockManager : MonoBehaviour
             elapsedTime = 0f;
         }
 
-        // �ƶ�����������б�
+        // ?????????????б?
         _blocksToFall.Clear();
     }
 }

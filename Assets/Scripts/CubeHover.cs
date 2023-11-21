@@ -3,14 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class CubeHover : MonoBehaviour
 {
-    private GameObject lHand, rHand;
+    private GameObject[] hands;
     private Collider collider;
     private MeshRenderer mRenderer;
 
     private PipeServer pipeServer;
+
+    private bool[] isHovering;
+    
+    public event Action<HandEnum> onHoverEnter;
+    
     private void Start()
     {
         pipeServer = GameObject.FindObjectOfType(typeof(PipeServer)).GetComponent<PipeServer>();
@@ -18,8 +24,9 @@ public class CubeHover : MonoBehaviour
         {
             Debug.LogWarning("Pipe server not found");
         }
-        // lHand = pipeServer.body.instances[15];
-        // rHand = pipeServer.body.instances[16];
+
+        hands = new GameObject[2];
+        isHovering = new bool[2];
 
         mRenderer = GetComponent<MeshRenderer>();
         collider = GetComponent<Collider>();
@@ -27,30 +34,44 @@ public class CubeHover : MonoBehaviour
 
     private void Update()
     {
-        lHand = pipeServer.body.instances[15];
-        rHand = pipeServer.body.instances[16];
-        Ray lRay = new Ray(lHand.transform.position, Vector3.forward);
-        Ray rRay = new Ray(rHand.transform.position, Vector3.forward);
-        RaycastHit lHit, rHit;
-        
-        if (collider.Raycast(lRay, out lHit, 200) || collider.Raycast(rRay, out rHit, 200))
+        hands[0] = pipeServer.body.instances[15];
+        hands[1] = pipeServer.body.instances[16];
+
+        UpdateHoverState(HandEnum.Left);
+        UpdateHoverState(HandEnum.Right);
+    }
+
+    private void UpdateHoverState(HandEnum whichHand)
+    {
+        var hand = hands[(int)whichHand];
+        Ray ray = new Ray(hand.transform.position, Vector3.forward);
+
+        if (collider.Raycast(ray, out var hit, 200))
         {
-            mRenderer.material.color = Color.cyan;
+            if (!isHovering[(int)whichHand])
+            {
+                mRenderer.material.color = Color.cyan;
+                isHovering[(int)whichHand] = true;
+            }
         }
         else
         {
-            mRenderer.material.color = Color.white;
+            if (isHovering[(int)whichHand])
+            {
+                mRenderer.material.color = Color.white;
+                isHovering[(int)whichHand] = false;
+            }
         }
     }
-
+    
     private void OnDrawGizmos()
     {
-        if (lHand == null)
+        if (!Application.isPlaying)
         {
             return;
         }
-        Ray lRay = new Ray(lHand.transform.position, Vector3.forward);
-        Ray rRay = new Ray(rHand.transform.position, Vector3.forward);
+        Ray lRay = new Ray(hands[0].transform.position, Vector3.forward);
+        Ray rRay = new Ray(hands[1].transform.position, Vector3.forward);
         Gizmos.color = Color.red;
         Gizmos.DrawRay(lRay);
         Gizmos.DrawRay(rRay);
