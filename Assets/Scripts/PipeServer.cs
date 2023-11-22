@@ -276,10 +276,11 @@ public class PipeServer : MonoBehaviour
 
                     if (anchoredBody && s[0] != "ANCHORED") continue;
                     if (!anchoredBody && s[0] != "FREE") continue;
-
+                    if (s[1] == "1" && gameObject.tag == "Blue") continue;
+                    if (s[1] == "2" && gameObject.tag == "Red") continue;
                     int i;
-                    if (!int.TryParse(s[1], out i)) continue;
-                    h.positionsBuffer[i].value += new Vector3(float.Parse(s[2]), float.Parse(s[3]), float.Parse(s[4]));
+                    if (!int.TryParse(s[2], out i)) continue;
+                    h.positionsBuffer[i].value += new Vector3(float.Parse(s[3]), float.Parse(s[4]), float.Parse(s[5]));
                     h.positionsBuffer[i].accumulatedValuesCount += 1;
                     h.active = true;
                 }
