@@ -10,6 +10,7 @@ import time
 import global_vars
 import struct
 
+
 # the capture thread captures images from the WebCam on a separate thread (for performance)
 class CaptureThread(threading.Thread):
     cap = None
@@ -18,28 +19,33 @@ class CaptureThread(threading.Thread):
     isRunning = False
     counter = 0
     timer = 0.0
+
     def run(self):
-        self.cap = cv2.VideoCapture(global_vars.WEBCAM_INDEX) # sometimes it can take a while for certain video captures 4
+        self.cap = cv2.VideoCapture(
+            global_vars.WEBCAM_INDEX)  # sometimes it can take a while for certain video captures 4
         if global_vars.USE_CUSTOM_CAM_SETTINGS:
             self.cap.set(cv2.CAP_PROP_FPS, global_vars.FPS)
-            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH,global_vars.WIDTH)
-            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT,global_vars.HEIGHT)
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, global_vars.WIDTH)
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, global_vars.HEIGHT)
 
         time.sleep(1)
 
-        print("Opened Capture @ %s fps"%str(self.cap.get(cv2.CAP_PROP_FPS)))
+        print("Opened Capture @ %s fps" % str(self.cap.get(cv2.CAP_PROP_FPS)))
         while not global_vars.KILL_THREADS:
             self.ret, self.frame = self.cap.read()
             self.isRunning = True
             if global_vars.DEBUG:
-                self.counter = self.counter+1
-                if time.time()-self.timer>=3:
-                    print("Capture FPS: ",self.counter/(time.time()-self.timer))
+                self.counter = self.counter + 1
+                if time.time() - self.timer >= 3:
+                    print("Capture FPS: ", self.counter / (time.time() - self.timer))
                     self.counter = 0
                     self.timer = time.time()
 
-# the body thread actually does the 
+
+# the body thread actually does the
 # processing of the captured images, and communication with unity
+
+
 class BodyThread(threading.Thread):
     data = ""
     dirty = True
@@ -47,24 +53,25 @@ class BodyThread(threading.Thread):
     timeSinceCheckedConnection = 0
     timeSincePostStatistics = 0
 
-    def compute_real_world_landmarks(self,world_landmarks,image_landmarks,image_shape):
+    @staticmethod
+    def compute_real_world_landmarks(world_landmarks, image_landmarks, image_shape):
         try:
             # pseudo camera internals
             # if you properly calibrated your camera tracking quality can improve...
-            frame_height,frame_width, channels = image_shape
-            focal_length = frame_width*.6
-            center = (frame_width/2, frame_height/2)
+            frame_height, frame_width, channels = image_shape
+            focal_length = frame_width * .6
+            center = (frame_width / 2, frame_height / 2)
             camera_matrix = np.array(
                 [[focal_length, 0, center[0]],
                  [0, focal_length, center[1]],
-                 [0, 0, 1]], dtype = "double"
+                 [0, 0, 1]], dtype="double"
             )
             distortion = np.zeros((4, 1))
 
-            success, rotation_vector, translation_vector = cv2.solvePnP(objectPoints= world_landmarks,
-                                                                        imagePoints= image_landmarks,
-                                                                        cameraMatrix= camera_matrix,
-                                                                        distCoeffs= distortion,
+            success, rotation_vector, translation_vector = cv2.solvePnP(objectPoints=world_landmarks,
+                                                                        imagePoints=image_landmarks,
+                                                                        cameraMatrix=camera_matrix,
+                                                                        distCoeffs=distortion,
                                                                         flags=cv2.SOLVEPNP_SQPNP)
             transformation = np.eye(4)
             transformation[0:3, 3] = translation_vector.squeeze()
@@ -87,9 +94,15 @@ class BodyThread(threading.Thread):
         capture = CaptureThread()
         capture.start()
 
-        with mp_pose.Pose(min_detection_confidence=0.80, min_tracking_confidence=0.5, model_complexity = global_vars.MODEL_COMPLEXITY,static_image_mode = False,enable_segmentation = True) as pose:
+        with mp_pose.Pose(min_detection_confidence=0.80, min_tracking_confidence=0.5,
+                          model_complexity=global_vars.MODEL_COMPLEXITY, static_image_mode=False,
+                          enable_segmentation=True) as pose1, mp_pose.Pose(min_detection_confidence=0.80,
+                                                                           min_tracking_confidence=0.5,
+                                                                           model_complexity=global_vars.MODEL_COMPLEXITY,
+                                                                           static_image_mode=False,
+                                                                           enable_segmentation=True) as pose2:
 
-            while not global_vars.KILL_THREADS and capture.isRunning==False:
+            while not global_vars.KILL_THREADS and capture.isRunning is False:
                 print("Waiting for camera and capture thread.")
                 time.sleep(0.5)
             print("Beginning capture")
@@ -101,29 +114,43 @@ class BodyThread(threading.Thread):
                 ret = capture.ret
                 image = capture.frame
 
+                image1 = image[0:image.shape[0], 0:int(image.shape[1] / 2)]
+                image2 = image[0:image.shape[0], int(image.shape[1] / 2) + 1:image.shape[1]]
                 # Image transformations and stuff
-                #image = cv2.flip(image, 1)
                 image.flags.writeable = global_vars.DEBUG
 
                 # Detections
-                results = pose.process(image)
+                # results = pose.process(image)
+                results1 = pose1.process(image1)
+                results2 = pose2.process(image2)
+
                 tf = time.time()
 
                 # Rendering results
                 if global_vars.DEBUG:
-                    if time.time()-self.timeSincePostStatistics>=1:
-                        print("Theoretical Maximum FPS: %f"%(1/(tf-ti)))
+                    if time.time() - self.timeSincePostStatistics >= 1:
+                        print("Theoretical Maximum FPS: %f" % (1 / (tf - ti)))
                         self.timeSincePostStatistics = time.time()
 
-                    if results.pose_landmarks:
-                        mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                                                  mp_drawing.DrawingSpec(color=(255, 100, 0), thickness=2, circle_radius=4),
-                                                  mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=2, circle_radius=2),
+                    if results1.pose_landmarks:
+                        mp_drawing.draw_landmarks(image1, results1.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                                                  mp_drawing.DrawingSpec(color=(255, 100, 0), thickness=2,
+                                                                         circle_radius=4),
+                                                  mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=2,
+                                                                         circle_radius=2),
                                                   )
-                    cv2.imshow('Body Tracking', image)
+                    if results2.pose_landmarks:
+                        mp_drawing.draw_landmarks(image2, results2.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                                                  mp_drawing.DrawingSpec(color=(255, 100, 0), thickness=2,
+                                                                         circle_radius=4),
+                                                  mp_drawing.DrawingSpec(color=(255, 255, 255), thickness=2,
+                                                                         circle_radius=2),
+                                                  )
+                    images = np.hstack([image1, image2])
+                    cv2.imshow('Body Tracking', images)
                     cv2.waitKey(1)
 
-                if self.pipe==None and time.time()-self.timeSinceCheckedConnection>=1:
+                if self.pipe == None and time.time() - self.timeSinceCheckedConnection >= 1:
                     try:
                         self.pipe = open(r'\\.\pipe\UnityMediaPipeBody', 'r+b', 0)
                     except FileNotFoundError:
@@ -136,21 +163,26 @@ class BodyThread(threading.Thread):
                     self.data = ""
                     i = 0
 
-                    if results.pose_world_landmarks:
-                        image_landmarks = results.pose_landmarks
-                        world_landmarks = results.pose_world_landmarks
+                    if results1.pose_world_landmarks:
+                        image_landmarks = results1.pose_landmarks
+                        world_landmarks = results1.pose_world_landmarks
 
                         model_points = np.float32([[-l.x, -l.y, -l.z] for l in world_landmarks.landmark])
-                        image_points = np.float32([[l.x * image.shape[1], l.y * image.shape[0]] for l in image_landmarks.landmark])
+                        image_points = np.float32(
+                            [[l.x * image.shape[1], l.y * image.shape[0]] for l in image_landmarks.landmark])
 
-                        body_world_landmarks_world = self.compute_real_world_landmarks(model_points,image_points,image.shape)
-                        body_world_landmarks = results.pose_world_landmarks
+                        body_world_landmarks_world = self.compute_real_world_landmarks(model_points, image_points,
+                                                                                       image.shape)
+                        body_world_landmarks = results1.pose_world_landmarks
 
-                        for i in range(0,33):
-                            self.data += "FREE|{}|{}|{}|{}\n".format(i,body_world_landmarks_world[i][0],body_world_landmarks_world[i][1],body_world_landmarks_world[i][2])
-                        for i in range(0,33):
-                            self.data += "ANCHORED|{}|{}|{}|{}\n".format(i,-body_world_landmarks.landmark[i].x,-body_world_landmarks.landmark[i].y,-body_world_landmarks.landmark[i].z)
-
+                        for i in range(0, 33):
+                            self.data += "FREE|{}|{}|{}|{}\n".format(i, body_world_landmarks_world[i][0],
+                                                                     body_world_landmarks_world[i][1],
+                                                                     body_world_landmarks_world[i][2])
+                        for i in range(0, 33):
+                            self.data += "ANCHORED|{}|{}|{}|{}\n".format(i, -body_world_landmarks.landmark[i].x,
+                                                                         -body_world_landmarks.landmark[i].y,
+                                                                         -body_world_landmarks.landmark[i].z)
 
                     s = self.data.encode('utf-8')
                     try:
@@ -158,9 +190,9 @@ class BodyThread(threading.Thread):
                         self.pipe.seek(0)
                     except Exception as ex:
                         print("Failed to write to pipe. Is the unity project open?")
-                        self.pipe= None
+                        self.pipe = None
 
-                #time.sleep(1/20)
+                # time.sleep(1/20)
 
         self.pipe.close()
         capture.cap.release()

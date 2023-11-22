@@ -5,7 +5,7 @@ KILL_THREADS = False
 DEBUG = True
 
 # To switch cameras. Sometimes takes a while.
-WEBCAM_INDEX = 3
+WEBCAM_INDEX = 0
 
 # Settings do not universally apply, not all WebCams support all frame rates and resolutions
 USE_CUSTOM_CAM_SETTINGS = False
