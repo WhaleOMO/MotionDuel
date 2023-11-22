@@ -176,14 +176,33 @@ class BodyThread(threading.Thread):
                         body_world_landmarks = results1.pose_world_landmarks
 
                         for i in range(0, 33):
-                            self.data += "FREE|{}|{}|{}|{}\n".format(i, body_world_landmarks_world[i][0],
-                                                                     body_world_landmarks_world[i][1],
-                                                                     body_world_landmarks_world[i][2])
+                            self.data += "FREE|1|{}|{}|{}|{}\n".format(i, body_world_landmarks_world[i][0],
+                                                                       body_world_landmarks_world[i][1],
+                                                                       body_world_landmarks_world[i][2])
                         for i in range(0, 33):
-                            self.data += "ANCHORED|{}|{}|{}|{}\n".format(i, -body_world_landmarks.landmark[i].x,
-                                                                         -body_world_landmarks.landmark[i].y,
-                                                                         -body_world_landmarks.landmark[i].z)
+                            self.data += "ANCHORED|1|{}|{}|{}|{}\n".format(i, -body_world_landmarks.landmark[i].x,
+                                                                           -body_world_landmarks.landmark[i].y,
+                                                                           -body_world_landmarks.landmark[i].z)
+                    if results2.pose_world_landmarks:
+                        image_landmarks = results2.pose_landmarks
+                        world_landmarks = results2.pose_world_landmarks
 
+                        model_points = np.float32([[-l.x, -l.y, -l.z] for l in world_landmarks.landmark])
+                        image_points = np.float32(
+                            [[l.x * image.shape[1], l.y * image.shape[0]] for l in image_landmarks.landmark])
+
+                        body_world_landmarks_world = self.compute_real_world_landmarks(model_points, image_points,
+                                                                                       image.shape)
+                        body_world_landmarks = results2.pose_world_landmarks
+
+                        for i in range(0, 33):
+                            self.data += "FREE|2|{}|{}|{}|{}\n".format(i, body_world_landmarks_world[i][0],
+                                                                       body_world_landmarks_world[i][1],
+                                                                       body_world_landmarks_world[i][2])
+                        for i in range(0, 33):
+                            self.data += "ANCHORED|2|{}|{}|{}|{}\n".format(i, -body_world_landmarks.landmark[i].x,
+                                                                           -body_world_landmarks.landmark[i].y,
+                                                                           -body_world_landmarks.landmark[i].z)
                     s = self.data.encode('utf-8')
                     try:
                         self.pipe.write(struct.pack('I', len(s)) + s)
