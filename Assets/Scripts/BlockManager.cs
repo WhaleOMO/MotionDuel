@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.XR;
 using Random = UnityEngine.Random;
@@ -18,13 +19,16 @@ public class BlockManager : MonoBehaviour
     private GameObject _blockToDelete;
     private List<GameObject> _blocksToFall;
     private bool _clicked = false;
-
+    
     private string lastBlockTag; // ?????????????????tag
+
+    private GameObject[] hoveredElements;
     
     private void Start()
     {
         blockTags = new List<string>();
         _blocksToFall = new List<GameObject>();
+        hoveredElements = new GameObject[2];
         GenerateBlocks();
     }
 
@@ -40,7 +44,8 @@ public class BlockManager : MonoBehaviour
                 if (block.TryGetComponent(out CubeHover cHover))
                 {
                     // Listen to hover event on the element
-                    cHover.onHoverEnter += HandelMotionHover;
+                    cHover.OnHoverEnter += HandelMotionHover;
+                    cHover.OnHoverEnter += JoyconController.instance.OnHandHoverEnter;
                 }
                 blocks.Add(block);
                 blockTags.Add(block.tag);
@@ -69,8 +74,41 @@ public class BlockManager : MonoBehaviour
         {
             HandleClick();
         }
+
+        var joyconCon = JoyconController.instance;
+        if (joyconCon.IsJoyconShoulderDown(HandEnum.Left) & joyconCon.IsJoyconShoulderDown(HandEnum.Right))
+        {
+            Erase();
+        }
     }
 
+    private void Erase()
+    {
+        if (hoveredElements.Contains(null))
+        {
+            return;
+        }
+        
+        if (hoveredElements[0].CompareTag(hoveredElements[1].tag))
+        {
+            AddBlocksToFall(hoveredElements[0]);
+            AddBlocksToFall(hoveredElements[1]);
+            if(_blocksToFall.Contains(hoveredElements[0]) || _blocksToFall.Contains(hoveredElements[1]))
+            {
+                _blocksToFall.Add(_blocksToFall[_blocksToFall.Count - 1]);
+            }
+
+            if (_blocksToFall.Count != 0) StartFalling();
+            //Debug.Log(_blocksToFall.Count);
+
+            hoveredElements[0].SetActive(false);
+            hoveredElements[1].SetActive(false);
+            hoveredElements[0] = null;
+            hoveredElements[1] = null;
+
+        }
+    }
+    
     /// <summary>
     /// Will be triggered when a hand hovers on an element
     /// </summary>
@@ -78,34 +116,7 @@ public class BlockManager : MonoBehaviour
     /// <param name="hand">indicates which hand, see the enum</param>
     private void HandelMotionHover(GameObject target, HandEnum hand)
     {
-        if(!_clicked)
-        {
-            _clicked = true;
-            _blockToDelete = target;
-        }
-        else if(_blockToDelete != target)
-        {
-            _clicked = false;
-            if(_blockToDelete.tag == target.tag)
-            {
-                AddBlocksToFall(_blockToDelete);
-                AddBlocksToFall(target);
-                if(_blocksToFall.Contains(_blockToDelete) || _blocksToFall.Contains(target))
-                {
-                    _blocksToFall.Add(_blocksToFall[_blocksToFall.Count - 1]);
-                }
-
-                if (_blocksToFall.Count != 0) StartFalling();
-                //Debug.Log(_blocksToFall.Count);
-
-                _blockToDelete.SetActive(false);
-                target.SetActive(false);
-
-
-                //Destroy(clickedObject);
-                //Destroy(_blockToDelete);
-            }
-        }
+        hoveredElements[(int)hand] = target;
     }
 
     /// <summary>
@@ -114,7 +125,7 @@ public class BlockManager : MonoBehaviour
     /// <param name="hand">indicates which hand, see the enum</param>
     private void HandelMotionExit(HandEnum hand)
     {
-        
+        hoveredElements[(int)hand] = null;
     }
 
     void FallBlock(GameObject block)
