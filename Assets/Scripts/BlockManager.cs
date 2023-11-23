@@ -16,6 +16,8 @@ public class BlockManager : MonoBehaviour
     //public float moveDistance = 2f;
     public float gapScale = 1f;
     public float xOffset = 1f;
+    public int numPlayers = 2;
+    public float playerGap = 5f;
 
     private List<string> blockTags; // ?????????λ???????tag
     private GameObject _blockToDelete;
@@ -30,31 +32,36 @@ public class BlockManager : MonoBehaviour
     {
         blockTags = new List<string>();
         _blocksToFall = new List<GameObject>();
-        hoveredElements = new GameObject[2];
+        hoveredElements = new GameObject[4];
         GenerateBlocks();
     }
 
     void GenerateBlocks()
     {
-        for (float row = 0; row < rows*gapScale; row+=gapScale)
+        for (int iter = 1; iter < numPlayers+1; iter++)
         {
-            for (float col = 0; col < columns*gapScale; col+=gapScale)
-            {
-                Vector3 spawnPosition = new Vector3(col-xOffset, row, 2); // ????????????λ??
-                GameObject randomBlockPrefab = GetRandomBlockPrefab();
-                GameObject block = Instantiate(randomBlockPrefab, spawnPosition, Quaternion.identity);
-                if (block.TryGetComponent(out CubeHover cHover))
-                {
-                    // Listen to hover event on the element
-                    cHover.OnHoverEnter += HandelMotionHover;
-                    cHover.OnHoverEnter += JoyconController.instance.OnHandHoverEnter;
-                    // cHover.OnHoverExit += HandelMotionExit;
-                }
-                blocks.Add(block);
-                blockTags.Add(block.tag);
-                lastBlockTag = block.tag;
-            }
+             for (float row = 0; row < rows*gapScale; row+=gapScale)
+             {
+                 for (float col = (iter-1) * playerGap; col < columns*gapScale + (iter-1) * playerGap; col+=gapScale)
+                 {
+                     Vector3 spawnPosition = new Vector3(col-xOffset, row, 2); // ????????????λ??
+                     GameObject randomBlockPrefab = GetRandomBlockPrefab();
+                     GameObject block = Instantiate(randomBlockPrefab, spawnPosition, Quaternion.identity);
+                     if (block.TryGetComponent(out CubeHover cHover))
+                     {
+                         // Listen to hover event on the element
+                         cHover.OnHoverEnter += HandelMotionHover;
+                         cHover.OnHoverEnter += JoyconController.instance.OnHandHoverEnter;
+                         cHover.playerIndex = iter;
+                         // cHover.OnHoverExit += HandelMotionExit;
+                     }
+                     blocks.Add(block);
+                     blockTags.Add(block.tag);
+                     lastBlockTag = block.tag;
+                 }
+             }           
         }
+
     }
 
     GameObject GetRandomBlockPrefab()
@@ -79,28 +86,35 @@ public class BlockManager : MonoBehaviour
         }
 
         var joyconCon = JoyconController.instance;
-        if (joyconCon.IsJoyconShoulderDown(HandEnum.Left) && joyconCon.IsJoyconShoulderDown(HandEnum.Right))
+        if (joyconCon.IsJoyconShoulderDown(HandEnum.P1Left) && joyconCon.IsJoyconShoulderDown(HandEnum.P1Right))
         {
-            Debug.Log(hoveredElements[0].tag + " " + hoveredElements[1].tag);
-            if (Erase())
+            if (Erase(0))
+            {
+                joyconCon.RestKeyState(false);
+            }
+        }
+        
+        if (joyconCon.IsJoyconShoulderDown(HandEnum.P2Left) && joyconCon.IsJoyconShoulderDown(HandEnum.P2Right))
+        {
+            if (Erase(2))
             {
                 joyconCon.RestKeyState(false);
             }
         }
     }
 
-    private bool Erase()
+    private bool Erase(int offset)
     {
         if (hoveredElements.Contains(null))
         {
             return false;
         }
         
-        if (hoveredElements[0].CompareTag(hoveredElements[1].tag))
+        if (hoveredElements[0 + offset].CompareTag(hoveredElements[1 + offset].tag))
         {
-            AddBlocksToFall(hoveredElements[0]);
-            AddBlocksToFall(hoveredElements[1]);
-            if(_blocksToFall.Contains(hoveredElements[0]) || _blocksToFall.Contains(hoveredElements[1]))
+            AddBlocksToFall(hoveredElements[0 + offset]);
+            AddBlocksToFall(hoveredElements[1 + offset]);
+            if(_blocksToFall.Contains(hoveredElements[0 + offset]) || _blocksToFall.Contains(hoveredElements[1 + offset]))
             {
                 _blocksToFall.Add(_blocksToFall[_blocksToFall.Count - 1]);
             }
@@ -108,10 +122,10 @@ public class BlockManager : MonoBehaviour
             if (_blocksToFall.Count != 0) StartFalling();
             //Debug.Log(_blocksToFall.Count);
 
-            hoveredElements[0].SetActive(false);
-            hoveredElements[1].SetActive(false);
-            hoveredElements[0] = null;
-            hoveredElements[1] = null;
+            hoveredElements[0 + offset].SetActive(false);
+            hoveredElements[1 + offset].SetActive(false);
+            hoveredElements[0 + offset] = null;
+            hoveredElements[1 + offset] = null;
             return true;
         }
 
@@ -216,6 +230,7 @@ public class BlockManager : MonoBehaviour
                 // Listen to hover event on the element
                 cHover.OnHoverEnter += HandelMotionHover;
                 cHover.OnHoverEnter += JoyconController.instance.OnHandHoverEnter;
+                cHover.playerIndex = block.GetComponent<CubeHover>().playerIndex;
                 // cHover.OnHoverExit += HandelMotionExit;
             }
             _blocksToFall.Add(newBlock);

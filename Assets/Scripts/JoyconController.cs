@@ -18,7 +18,7 @@ public class JoyconController : MonoBehaviour
         }
         instance = this;
 
-        isUp = new List<bool>(2);
+        isUp = new List<bool>(4);
         for (int i = 0; i < isUp.Capacity; i++)
         {
             isUp.Add(true);
@@ -36,41 +36,39 @@ public class JoyconController : MonoBehaviour
 
     private void Update()
     {
-        if (_joycons[(int)HandEnum.Left].GetButtonUp(Joycon.Button.SHOULDER_2))
+        if (_joycons[(int)HandEnum.P1Left].GetButtonUp(Joycon.Button.SHOULDER_2))
         {
-            isUp[(int)HandEnum.Left] = true;
+            isUp[(int)HandEnum.P1Left] = true;
         }
         
-        if (_joycons[(int)HandEnum.Right].GetButtonUp(Joycon.Button.SHOULDER_2))
+        if (_joycons[(int)HandEnum.P1Right].GetButtonUp(Joycon.Button.SHOULDER_2))
         {
-            isUp[(int)HandEnum.Right] = true;
+            isUp[(int)HandEnum.P1Right] = true;
         }
+        
+        /*
+        if (_joycons[(int)HandEnum.P2Left].GetButtonUp(Joycon.Button.SHOULDER_2))
+        {
+            isUp[(int)HandEnum.P2Left] = true;
+        }
+        
+        if (_joycons[(int)HandEnum.P2Right].GetButtonUp(Joycon.Button.SHOULDER_2))
+        {
+            isUp[(int)HandEnum.P2Right] = true;
+        }
+        */
     }
 
     public bool IsJoyconShoulderDown(HandEnum whichHand)
     {
         bool isDown = _joycons[(int)whichHand].GetButton(Joycon.Button.SHOULDER_2);
-        Debug.Log("is Down = " + isDown);
-        Debug.Log("is UP = " + isUp[(int)whichHand]);
+
         if (isUp[(int)whichHand] && isDown)
         {
-            Debug.Log("fkbug");
             return true;
         }
-        else
-        {
-            Debug.Log("fkclear");
-            return false;
-        }
-            
-        
 
-        // #if UNITY_EDITOR
-        //     if (isDown)
-        //     {
-        //         UnityEditor.EditorApplication.Beep();
-        //     }
-        // #endif
+        return false;
     }
     
     public void OnHandHoverEnter(GameObject target, HandEnum whichHand)

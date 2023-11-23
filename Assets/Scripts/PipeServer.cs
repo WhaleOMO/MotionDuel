@@ -15,6 +15,8 @@ using UnityEngine;
 public class PipeServer : MonoBehaviour
 {
     public Transform parent;
+    public Transform p1;
+    public Transform p2;
     public GameObject landmarkPrefab;
     public GameObject linePrefab;
     public GameObject headPrefab;
@@ -24,8 +26,7 @@ public class PipeServer : MonoBehaviour
     public float landmarkScale = 1f;
     public float maxSpeed = 50f;
     public int samplesForPose = 1;
-
-    public Body body;
+    public Body body,body1,body2;
     private NamedPipeServerStream server;
 
     const int LANDMARK_COUNT = 33;
@@ -191,16 +192,18 @@ public class PipeServer : MonoBehaviour
     private void Start()
     {
         System.Globalization.CultureInfo.DefaultThreadCurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
-
-        body = new Body(parent,landmarkPrefab,linePrefab,landmarkScale,enableHead?headPrefab:null);
-
+        
+        // body = new Body(parent,landmarkPrefab,linePrefab,landmarkScale,enableHead?headPrefab:null);
+        body1 = new Body(p1,landmarkPrefab,linePrefab,landmarkScale,enableHead?headPrefab:null);
+        body2 = new Body(p2,landmarkPrefab,linePrefab,landmarkScale,enableHead?headPrefab:null);
         Thread t = new Thread(new ThreadStart(Run));
         t.Start();
 
     }
     private void Update()
     {
-        UpdateBody(body);
+        UpdateBody(body1);
+        UpdateBody(body2);
     }
     private void UpdateBody(Body b)
     {
@@ -276,10 +279,10 @@ public class PipeServer : MonoBehaviour
 
                     if (anchoredBody && s[0] != "ANCHORED") continue;
                     if (!anchoredBody && s[0] != "FREE") continue;
-                    if (s[1] == "1" && gameObject.tag == "Blue") continue;
-                    if (s[1] == "2" && gameObject.tag == "Red") continue;
                     int i;
                     if (!int.TryParse(s[2], out i)) continue;
+                    if (int.Parse(s[1]) == 1) h = body1;
+                    else h = body2;
                     h.positionsBuffer[i].value += new Vector3(float.Parse(s[3]), float.Parse(s[4]), float.Parse(s[5]));
                     h.positionsBuffer[i].accumulatedValuesCount += 1;
                     h.active = true;

@@ -13,11 +13,13 @@ public class CubeHover : MonoBehaviour
     private PipeServer pipeServer;
 
     private bool[] isHovering;
+    [HideInInspector]public int playerIndex;
     
     public event Action<GameObject, HandEnum> OnHoverEnter;
     public event Action<GameObject, HandEnum> OnHoverStay;
     public event Action<GameObject, HandEnum> OnHoverExit;
-
+    
+    
     private void Start()
     {
         pipeServer = GameObject.FindObjectOfType(typeof(PipeServer)).GetComponent<PipeServer>();
@@ -35,40 +37,42 @@ public class CubeHover : MonoBehaviour
 
     private void Update()
     {
-        hands[0] = pipeServer.body.instances[15];
-        hands[1] = pipeServer.body.instances[16];
+        var body = playerIndex == 1 ? pipeServer.body2 : pipeServer.body1;
+        hands[0] = body.instances[15];
+        hands[1] = body.instances[16];
 
-        UpdateHoverState(HandEnum.Left);
-        UpdateHoverState(HandEnum.Right);
+        UpdateHoverState(playerIndex == 1 ? HandEnum.P1Left : HandEnum.P2Left);
+        UpdateHoverState(playerIndex == 1 ? HandEnum.P1Right : HandEnum.P2Right);
     }
 
     private void UpdateHoverState(HandEnum whichHand)
     {
-        var hand = hands[(int)whichHand];
+        int handIdx = playerIndex == 1 ? (int)whichHand : (int)whichHand - 2;
+        var hand = hands[handIdx];
         Ray ray = new Ray(hand.transform.position, Vector3.forward);
 
         if (collider.Raycast(ray, out var hit, 200))
         {
-            if (!isHovering[(int)whichHand])
+            if (!isHovering[handIdx])
             {
                 // mRenderer.material.color = Color.cyan; // for debug
-                isHovering[(int)whichHand] = true;
-                OnHoverEnter?.Invoke(this.gameObject, whichHand);
+                isHovering[handIdx] = true;
+                // OnHoverEnter?.Invoke(this.gameObject, whichHand);
                 mRenderer.material.color *= 5f;
                 return;
             }
             
-            OnHoverStay?.Invoke(this.gameObject, whichHand);
+            // OnHoverStay?.Invoke(this.gameObject, whichHand);
         }
         else
         {
-            if (isHovering[(int)whichHand])
+            if (isHovering[handIdx])
             {
                 // mRenderer.material.color = Color.white;  
-                isHovering[(int)whichHand] = false;
+                isHovering[handIdx] = false;
                 mRenderer.material.color /= 5f;
                 // On Hover Exit
-                OnHoverExit?.Invoke(this.gameObject, whichHand);
+                // OnHoverExit?.Invoke(this.gameObject, whichHand);
             }
         }
     }

@@ -1,8 +1,9 @@
 
 public enum HandEnum
 {
-    Left = 0,
-    Right = 1
-    // Currently only one player
-    // Maybe player2's left will be 2, and right be 3
+    P1Left = 0,
+    P1Right = 1,
+    
+    P2Left = 2,
+    P2Right = 3
 }
