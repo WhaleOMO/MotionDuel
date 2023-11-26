@@ -75,6 +75,10 @@ public class PipeServer : MonoBehaviour
             {
                 instances[i] = Instantiate(landmarkPrefab);
                 instances[i].transform.localScale = Vector3.one * s;
+                if (i!=15 & i!=16)
+                {
+                    instances[i].transform.localScale = Vector3.zero;
+                }
                 instances[i].transform.parent = parent;
                 instances[i].name = ((Landmark)i).ToString();
 
@@ -85,6 +89,7 @@ public class PipeServer : MonoBehaviour
             }
             for (int i = 0; i < lines.Length; ++i)
             {
+                return;
                 lines[i] = Instantiate(linePrefab).GetComponent<LineRenderer>();
             }
 
@@ -98,6 +103,7 @@ public class PipeServer : MonoBehaviour
         }
         public void UpdateLines()
         {
+            return;
             lines[0].positionCount = 4;
             lines[0].SetPosition(0, Position((Landmark)32));
             lines[0].SetPosition(1, Position((Landmark)30));

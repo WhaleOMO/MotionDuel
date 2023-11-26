@@ -17,7 +17,8 @@ public class BlockManager : MonoBehaviour
     public float gapScale = 1f;
     public float xOffset = 1f;
     public int numPlayers = 2;
-    public float playerGap = 5f;
+    public float playerGap = 13f;
+    public float yOffset;
 
     private List<string> blockTags; // ?????????λ???????tag
     private GameObject _blockToDelete;
@@ -44,7 +45,7 @@ public class BlockManager : MonoBehaviour
              {
                  for (float col = (iter-1) * playerGap; col < columns*gapScale + (iter-1) * playerGap; col+=gapScale)
                  {
-                     Vector3 spawnPosition = new Vector3(col-xOffset, row, 2); // ????????????λ??
+                     Vector3 spawnPosition = new Vector3(col-xOffset, row-yOffset, 2); // ????????????λ??
                      GameObject randomBlockPrefab = GetRandomBlockPrefab();
                      GameObject block = Instantiate(randomBlockPrefab, spawnPosition, Quaternion.identity);
                      if (block.TryGetComponent(out CubeHover cHover))

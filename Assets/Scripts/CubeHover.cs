@@ -14,6 +14,8 @@ public class CubeHover : MonoBehaviour
 
     private bool[] isHovering;
     [HideInInspector]public int playerIndex;
+
+    private Color originColor;
     
     public event Action<GameObject, HandEnum> OnHoverEnter;
     public event Action<GameObject, HandEnum> OnHoverStay;
@@ -33,6 +35,7 @@ public class CubeHover : MonoBehaviour
 
         mRenderer = GetComponent<MeshRenderer>();
         collider = GetComponent<Collider>();
+        originColor = mRenderer.material.GetColor("_Color");
     }
 
     private void Update()
@@ -57,12 +60,12 @@ public class CubeHover : MonoBehaviour
             {
                 // mRenderer.material.color = Color.cyan; // for debug
                 isHovering[handIdx] = true;
-                // OnHoverEnter?.Invoke(this.gameObject, whichHand);
-                mRenderer.material.color *= 5f;
+                OnHoverEnter?.Invoke(this.gameObject, whichHand);
+                mRenderer.material.SetColor("_Color", originColor * 5f);
                 return;
             }
             
-            // OnHoverStay?.Invoke(this.gameObject, whichHand);
+            OnHoverStay?.Invoke(this.gameObject, whichHand);
         }
         else
         {
@@ -70,9 +73,9 @@ public class CubeHover : MonoBehaviour
             {
                 // mRenderer.material.color = Color.white;  
                 isHovering[handIdx] = false;
-                mRenderer.material.color /= 5f;
+                mRenderer.material.SetColor("_Color", originColor);
                 // On Hover Exit
-                // OnHoverExit?.Invoke(this.gameObject, whichHand);
+                OnHoverExit?.Invoke(this.gameObject, whichHand);
             }
         }
     }
