@@ -36,6 +36,11 @@ public class JoyconController : MonoBehaviour
 
     private void Update()
     {
+        if (_joycons.Count < 2)
+        {
+            return;
+        }
+        
         if (_joycons[(int)HandEnum.P1Left].GetButtonUp(Joycon.Button.SHOULDER_2))
         {
             isUp[(int)HandEnum.P1Left] = true;
@@ -61,9 +66,16 @@ public class JoyconController : MonoBehaviour
 
     public bool IsJoyconShoulderDown(HandEnum whichHand)
     {
-        bool isDown = _joycons[(int)whichHand].GetButton(Joycon.Button.SHOULDER_2);
+        int handIdx = (int)whichHand;
+        if (handIdx > _joycons.Count - 1)
+        {
+            Debug.LogFormat("hand {0} seems do not have a joycon", handIdx);
+            return false;
+        }
+        
+        bool isDown = _joycons[handIdx].GetButton(Joycon.Button.SHOULDER_2);
 
-        if (isUp[(int)whichHand] && isDown)
+        if (isUp[handIdx] && isDown)
         {
             return true;
         }
@@ -73,14 +85,24 @@ public class JoyconController : MonoBehaviour
     
     public void OnHandHoverEnter(GameObject target, HandEnum whichHand)
     {
+        if ((int)whichHand > _joycons.Count - 1)
+        {
+            return;
+        }
+        
         _joycons[(int)whichHand].SetRumble(160, 320, 0.1f, 50);
     }
 
-    public void RestKeyState(bool state)
+    public void RestKeyState(int player, bool state)
     {
-        for (int i = 0; i < isUp.Capacity; i++)
-        {
-            isUp[i] = state;
-        }
+        isUp[player] = state;
+    }
+    
+    void OnGUI()
+    {
+        var infoText = "";
+        infoText += _joycons.Count < 2 ? "Right Joycon disconnected" : "";
+        GUI.color = Color.red;
+        GUI.Label(new Rect(10, 10, 500, 20), infoText);
     }
 }

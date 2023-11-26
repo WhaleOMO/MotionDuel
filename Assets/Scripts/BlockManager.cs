@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.XR;
 using Random = UnityEngine.Random;
 
 public class BlockManager : MonoBehaviour
 {
+    public bool noJoyconMode;
     public GameObject[] blockPrefabs; // ??????????????
     public int rows = 5; // ????
     public int columns = 5; // ????
@@ -20,6 +22,11 @@ public class BlockManager : MonoBehaviour
     public float playerGap = 13f;
     public float yOffset;
 
+    public static bool scrFlag1;
+    public static bool scrFlag2;
+
+    public GameObject eraseVFX;
+    
     private List<string> blockTags; // ?????????λ???????tag
     private GameObject _blockToDelete;
     private List<GameObject> _blocksToFall;
@@ -87,26 +94,30 @@ public class BlockManager : MonoBehaviour
         }
 
         var joyconCon = JoyconController.instance;
-        if (joyconCon.IsJoyconShoulderDown(HandEnum.P1Left) && joyconCon.IsJoyconShoulderDown(HandEnum.P1Right))
+        if (joyconCon.IsJoyconShoulderDown(HandEnum.P1Left))
         {
+            Debug.Log("P1 Erase!");
             if (Erase(0))
             {
-                joyconCon.RestKeyState(false);
+                joyconCon.RestKeyState(0, false);
+                scrFlag1 = true;
             }
         }
         
-        if (joyconCon.IsJoyconShoulderDown(HandEnum.P2Left) && joyconCon.IsJoyconShoulderDown(HandEnum.P2Right))
+        if (joyconCon.IsJoyconShoulderDown(HandEnum.P1Right))
         {
+            Debug.Log("P2 Erase!");
             if (Erase(2))
             {
-                joyconCon.RestKeyState(false);
+                joyconCon.RestKeyState(1, false);
+                scrFlag2 = true;
             }
         }
     }
 
     private bool Erase(int offset)
     {
-        if (hoveredElements.Contains(null))
+        if (hoveredElements[0 + offset] == null || hoveredElements[1 + offset] == null)
         {
             return false;
         }
@@ -123,10 +134,14 @@ public class BlockManager : MonoBehaviour
             if (_blocksToFall.Count != 0) StartFalling();
             //Debug.Log(_blocksToFall.Count);
 
+            Instantiate(eraseVFX, hoveredElements[0 + offset].transform.position, Quaternion.identity);
+            Instantiate(eraseVFX, hoveredElements[1 + offset].transform.position, Quaternion.identity);
+            
             hoveredElements[0 + offset].SetActive(false);
             hoveredElements[1 + offset].SetActive(false);
             hoveredElements[0 + offset] = null;
             hoveredElements[1 + offset] = null;
+            SoundManager.instance.PlayBrokenSound();
             return true;
         }
 
