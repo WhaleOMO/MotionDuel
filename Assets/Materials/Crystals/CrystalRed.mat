@@ -78,7 +78,7 @@ Material:
     - _QueueOffset: 0
     - _Smoothness: 0.742
     m_Colors:
-    - _Color: {r: 1, g: 0.058790363, b: 0, a: 0}
+    - _Color: {r: 1, g: 0.0000000019868216, b: 0, a: 0}
     - _GlowCenter: {r: 0, g: 0, b: 0, a: 0}
     - _GlowColor: {r: 0, g: 0.7180824, b: 0.84387034, a: 0}
   m_BuildTextureStacks: []

@@ -73,12 +73,12 @@ Material:
     m_Floats:
     - _GlowFalloff: 6
     - _Metallic: 1
-    - _ParallaxOffset: 0.9
+    - _ParallaxOffset: 0.777
     - _QueueControl: 0
     - _QueueOffset: 0
     - _Smoothness: 0.742
     m_Colors:
-    - _Color: {r: 0.21698111, g: 0.06953466, b: 0.015693584, a: 0}
+    - _Color: {r: 0.06109416, g: 0.9528302, b: 0, a: 0}
     - _GlowCenter: {r: 0, g: 0, b: 0, a: 0}
     - _GlowColor: {r: 0, g: 0.7180824, b: 0.84387034, a: 0}
   m_BuildTextureStacks: []
