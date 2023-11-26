@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +15,7 @@ public class SliderController : MonoBehaviour
     private bool _isPlayingTickSound;
     
     public Image barImage;
+    public GameObject endGamePanel;
 
     private void Start()
     {
@@ -28,6 +30,10 @@ public class SliderController : MonoBehaviour
         {
             Time.timeScale = 0f;
             GetComponent<AudioSource>().Pause();
+            endGamePanel.SetActive(true);
+            int winPlayer = ScoreManager.WhichPlayerWins();
+            var endText = winPlayer == 0 ? "Draw!" : $"Player {winPlayer} wins!";
+            endGamePanel.GetComponentInChildren<TMP_Text>().text = endText;
         }
         
         if (curr < CountDown * 0.3)

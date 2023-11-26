@@ -8,8 +8,8 @@ public class ScoreManager : MonoBehaviour
 {
     // Start is called before the first frame update
 
-    private int P1score = 0;
-    private int P2score = 0;
+    private static int P1score = 0;
+    private static int P2score = 0;
 
     public TMP_Text ScoreText1;
     public TMP_Text ScoreText2;
@@ -29,5 +29,11 @@ public class ScoreManager : MonoBehaviour
             ScoreText2.text = P2score.ToString();
             BlockManager.scrFlag2 = false;
         }
+    }
+
+    public static int WhichPlayerWins()
+    {
+        return P1score == P2score ? 0 : 
+               P1score > P2score ? 1 : 2;
     }
 }
