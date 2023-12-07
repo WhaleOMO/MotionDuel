@@ -12,6 +12,9 @@ Shader "Custom/Sky"
         [HDR]_NightHorizonColor("Night Horizon", color) = (0.5, 0.62, 0.64, 1)
         [Header(Mie Scattering)]
         [HDR]_MieScatteringColor("Mie Scatter Color", color) = (1.0, 1.0, 0.0, 1.0)
+        [Header(Sun)]
+        _SunSize("Sun Size", float) = 1.0
+        [HDR]_SunColor("Sun Color", color) = (1, 1, 1, 1)
         [Header(NightSky)]
         _StarMap("Star Map", 2D) = "black"{}
         _StarNoise("Star Noise", 2D) = "white"{}
@@ -31,8 +34,10 @@ Shader "Custom/Sky"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
+            float _SunSize;
             float3 _DayMidColor, _DayZenithColor, _NightMidColor, _NightZenithColor, _MieScatteringColor;
             float3 _DayHorizonColor, _NightHorizonColor;
+            float3 _SunColor;
 
             Texture2D _StarMap; SAMPLER(sampler_StarMap); float4 _StarMap_ST;
             Texture2D _StarNoise; SAMPLER(sampler_StarNoise); float4 _StarNoise_ST;
@@ -75,10 +80,16 @@ Shader "Custom/Sky"
                 return (1.0 / (4.0 * PI)) * (1.0 - g2) / pow( abs(1.0 + g2 - 2.0 * g * cosVL), 1.5);
             }
 
+            float MiePhaseCS(float g, float cosVL)
+            {
+                float g2 = g * g;
+                return (1.0 / (4.0 * PI)) * ((3.0 * (1.0 - g2)) / (2.0 * (2.0 + g2))) * ((1 + cosVL * cosVL) / (pow((1 + g2 - 2 * g * cosVL), 1.5)));
+            }
+
             void GetLocalDensity(float3 pos, out float localDensity)
             {
                 float height = distance(pos, PlanetCenter) - PlanetRadius;
-                localDensity = 3.99 * 1e-6 * exp(-(height/DensityScaleHeight));
+                localDensity = exp(-(height/DensityScaleHeight));
             }
             
             // Only Mie Scattering
@@ -88,40 +99,24 @@ Shader "Custom/Sky"
             {
                 #define Extinction float(4.4 * 1e-6)    // Mie's Absorption
                 
-                float3 step = rayDir * (rayLength / sampleCount);
-                float3 stepSize = length(step);
+                float3 step = normalize(rayDir) * (rayLength / (float)sampleCount);
+                float stepSize = length(step);
 
-                float scatterMie = 0;               // final scatter result
-                float densityTowardsRay = 0;        // accumulated density
-
+                float mieScatter = 0;
                 float localDensity = 0;
-                float prevLocalDensity = 0;
-                float prevTransmittance = 0;
+                float extinctionTowardsRay = 0;        // accumulated density
 
-                // for p at ray start
-                GetLocalDensity(rayStart, localDensity);
-                densityTowardsRay += localDensity * stepSize;
-                prevLocalDensity = localDensity;
-
-                float Transmittance = exp(-(densityTowardsRay) * Extinction) * localDensity;
-                prevTransmittance = Transmittance;
-
-                for (int i = 1; i < sampleCount; i+=1)
-                {
-                    float3 P = rayStart + step * i;         // ray march
-
-                    GetLocalDensity(P, localDensity);
-                    densityTowardsRay += (prevLocalDensity + localDensity) * stepSize / 2;
-                    Transmittance = exp(-(densityTowardsRay) * Extinction) * localDensity;
-                    scatterMie += (prevTransmittance + Transmittance) * stepSize / 2;
-
-                    prevTransmittance = Transmittance;
-                    prevLocalDensity = localDensity;
-                }
-
-                scatterMie = scatterMie * MiePhase(0.9, dot(rayDir, lightDir));
+                float3 p = rayStart + 0.5 * step;      // start at middle point
                 
-                return float3(scatterMie * _MieScatteringColor);
+                for (int i = 0; i < sampleCount; i+=1)
+                {
+                    GetLocalDensity(p, localDensity);
+                    extinctionTowardsRay += localDensity * stepSize;
+                    mieScatter += exp(-extinctionTowardsRay * Extinction) * localDensity;
+                    p += step;
+                }
+                
+                return _MieScatteringColor * mieScatter * MiePhaseCS(0.9, dot(rayDir, lightDir));
             }
             
             Varyings vert (Attributes v)
@@ -146,12 +141,17 @@ Shader "Custom/Sky"
                 float horizonMask = smoothstep(-horizonWidth, 0, i.uv.y) * smoothstep(-horizonWidth, 0, -i.uv.y);
                 float3 horizonGradient = lerp(_NightHorizonColor, _DayHorizonColor, sunNightStep) * saturate(horizonMask);
                 // Mie Inscattering
-                float3 rayStart = float3(0,1,0);
+                float3 rayStart = _WorldSpaceCameraPos.xyz;
                 float3 rayDir = normalize(i.uv.xyz);
                 float disToAtmosphere = RaySphereIntersection(rayStart, rayDir, PlanetCenter, PlanetRadius + 100000);
                 float disToPlanet = RaySphereIntersection(rayStart, rayDir, PlanetCenter, PlanetRadius);
-                float rayDistance = disToPlanet > 0 ? min(disToPlanet, disToAtmosphere) : disToAtmosphere;
-                float3 inscattering = IntegrateInscattering(rayStart, rayDir, rayDistance, mainLight.direction, 16);
+                // float rayDistance = (disToPlanet > 0) ? min(disToPlanet * 100000, disToAtmosphere) : disToAtmosphere;
+                float3 inscattering = IntegrateInscattering(rayStart, rayDir, disToAtmosphere, mainLight.direction, 16);
+                inscattering *= smoothstep(0, 0.2, 0.25 - abs(mainLight.direction.y));
+                // Sun Disk
+                float sunDistance = distance(i.uv.xyz, mainLight.direction);
+                float sunArea = 1.0 - (sunDistance / _SunSize);
+                sunArea = smoothstep(0.6, 1, sunArea);
                 // Star
                 float starMask = lerp((1 - smoothstep(-0.7, -0.2, -i.uv.y)), 0, sunNightStep);
                 float starNoise = SAMPLE_TEXTURE2D(_StarNoise, sampler_StarNoise, i.uv.xz * _StarNoise_ST.x + _Time.x * 0.2).r;
@@ -159,7 +159,9 @@ Shader "Custom/Sky"
                 float3 starsColor = smoothstep(0.2, 0.3, stars) * smoothstep(0.5, 0.8, starNoise);
 
                 //return half4(inscattering, 1.0);
-                return half4(horizonGradient + skyGradient + inscattering + starsColor, 1.0);
+                color = horizonGradient + skyGradient + clamp(inscattering, 0, 100) +
+                        starsColor + sunArea * _SunColor;
+                return half4(color, 1.0);
             }
             ENDHLSL
         }

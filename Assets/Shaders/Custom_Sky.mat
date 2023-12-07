@@ -36,13 +36,15 @@ Material:
         m_Scale: {x: 3, y: 3}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _SunSize: 0.05
     m_Colors:
     - _DayHorizonColor: {r: 0.13527942, g: 0.21079455, b: 0.4528302, a: 1}
     - _DayMidColor: {r: 0.119200125, g: 0.3185553, b: 0.9245283, a: 1}
     - _DayZenithColor: {r: 0, g: 0.07119971, b: 0.3773585, a: 1}
-    - _MieScatteringColor: {r: 2, g: 1.2192415, b: 0, a: 1}
+    - _MieScatteringColor: {r: 2.6197767, g: 0.89308906, b: 0, a: 1}
     - _NightHorizonColor: {r: 0.015545257, g: 0.021977494, b: 0.03773582, a: 1}
     - _NightMidColor: {r: 0, g: 0.05692586, b: 0.2830189, a: 1}
     - _NightZenithColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SunColor: {r: 21.361254, g: 15.780533, b: 11.016495, a: 1}
   m_BuildTextureStacks: []
