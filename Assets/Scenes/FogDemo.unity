@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.0023365896, g: 0.046086393, b: 0.2183739, a: 1}
+  m_IndirectSpecularColor: {r: 0.07934731, g: 0.20849255, b: 0.65204555, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -216,6 +216,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: mountain1 (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: cdd5fe5c7cc8304409a7404e4df85cb7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -251,7 +256,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 3
+  m_Intensity: 5
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -309,13 +314,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 305262625}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.98394877, y: 0.0066905636, z: -0.02180447, w: 0.17698763}
+  m_LocalRotation: {x: -0.998457, y: -0, z: -0, w: -0.05553074}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 200.365, y: 357.232, z: 1.276001}
+  m_LocalEulerAnglesHint: {x: -186.367, y: 0, z: 0}
 --- !u!114 &305262628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -481,6 +486,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: mountain1
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: cdd5fe5c7cc8304409a7404e4df85cb7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -578,6 +588,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: mountain1 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: cdd5fe5c7cc8304409a7404e4df85cb7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -822,7 +837,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 200, y: 200, z: 200}
+  m_LocalScale: {x: 500, y: 500, z: 500}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}

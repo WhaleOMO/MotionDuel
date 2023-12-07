@@ -41,6 +41,7 @@ Material:
     - _DayHorizonColor: {r: 0.13527942, g: 0.21079455, b: 0.4528302, a: 1}
     - _DayMidColor: {r: 0.119200125, g: 0.3185553, b: 0.9245283, a: 1}
     - _DayZenithColor: {r: 0, g: 0.07119971, b: 0.3773585, a: 1}
+    - _MieScatteringColor: {r: 2, g: 1.2192415, b: 0, a: 1}
     - _NightHorizonColor: {r: 0.015545257, g: 0.021977494, b: 0.03773582, a: 1}
     - _NightMidColor: {r: 0, g: 0.05692586, b: 0.2830189, a: 1}
     - _NightZenithColor: {r: 0, g: 0, b: 0, a: 1}
