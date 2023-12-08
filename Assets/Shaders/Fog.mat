@@ -38,15 +38,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _FogFalloff: 300
-    - _FogGlobalDensity: 0.1
-    - _FogGradientDis: 200
-    - _FogHeight: 100
+    - _FogFalloff: 700
+    - _FogGlobalDensity: 0.2
+    - _FogGradientDis: 250
+    - _FogHeight: 60
     - _FogStartDis: 150
     m_Colors:
     - _ColorFar: {r: 0.77647066, g: 0.6313726, b: 1, a: 1}
     - _ColorNear: {r: 0, g: 0, b: 0, a: 0}
-    - _FogColor: {r: 0.44298354, g: 0.3686275, b: 0.9647059, a: 0}
+    - _FogColor: {r: 0.48545593, g: 0.41194963, b: 1, a: 0}
     - _Fog_Start_End: {r: 0, g: 20, b: 0, a: 0}
     - _LightColor: {r: 1, g: 0.9370261, b: 0.70440245, a: 0}
   m_BuildTextureStacks: []

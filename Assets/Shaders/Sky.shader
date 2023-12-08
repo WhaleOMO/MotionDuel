@@ -157,8 +157,7 @@ Shader "Custom/Sky"
                 float starNoise = SAMPLE_TEXTURE2D(_StarNoise, sampler_StarNoise, i.uv.xz * _StarNoise_ST.x + _Time.x * 0.2).r;
                 float stars = SAMPLE_TEXTURE2D(_StarMap, sampler_StarMap, i.uv.xz * _StarMap_ST.xy + _StarMap_ST.zw - _Time.x * 0.15) * starMask;
                 float3 starsColor = smoothstep(0.2, 0.3, stars) * smoothstep(0.5, 0.8, starNoise);
-
-                //return half4(inscattering, 1.0);
+                
                 color = horizonGradient + skyGradient + clamp(inscattering, 0, 100) +
                         starsColor + sunArea * _SunColor;
                 return half4(color, 1.0);
