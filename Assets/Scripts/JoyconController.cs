@@ -69,7 +69,7 @@ public class JoyconController : MonoBehaviour
         int handIdx = (int)whichHand;
         if (handIdx > _joycons.Count - 1)
         {
-            Debug.LogFormat("hand {0} seems do not have a joycon", handIdx);
+            //Debug.LogFormat("hand {0} seems do not have a joycon", handIdx);
             return false;
         }
         

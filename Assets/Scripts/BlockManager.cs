@@ -12,7 +12,7 @@ public class BlockManager : MonoBehaviour
     public bool noJoyconMode;
     public GameObject[] blockPrefabs; // ??????????????
     public int rows = 5; // ????
-    public int columns = 5; // ????
+    public int columns = 4; // ????
     public List<GameObject> blocks;
     public float moveSpeed = 1f;
     //public float moveDistance = 2f;
@@ -29,7 +29,20 @@ public class BlockManager : MonoBehaviour
     
     private List<string> blockTags; // ?????????λ???????tag
     private GameObject _blockToDelete;
+
+    private bool _player1PushedButtonToReleaseSkill = true;
+    private bool _player2PushedButtonToReleaseSkill = true;
+
     private List<GameObject> _blocksToFall;
+    private List<GameObject> _blocksToFallBuffer;
+    private List<GameObject> _blocksBin; //Finally We end up with having a garbage bin
+    private string[] _lastElimination;
+    private Queue<string>[] _playerSkills;
+    //private Queue<string>[] lastTwoErase; //Stores the last two elements the player has elimated
+
+
+    private bool _isFalling = false;
+
     private bool _clicked = false;
     
     private string lastBlockTag; // ?????????????????tag
@@ -40,34 +53,62 @@ public class BlockManager : MonoBehaviour
     {
         blockTags = new List<string>();
         _blocksToFall = new List<GameObject>();
+        _blocksToFallBuffer = new List<GameObject>();
+        _blocksBin = new List<GameObject>();
         hoveredElements = new GameObject[4];
+        _lastElimination = new string[2];
+        _lastElimination[0] = "";
+        _lastElimination[1] = "";
+        _playerSkills = new Queue<string>[2];
+        _playerSkills[0] = new Queue<string>();
+        _playerSkills[1] = new Queue<string>();
+
+        /*** This part of the code is for skill released by 3 continues elimenation,
+        I changed it into 2 because its too hard to get 3 in a sequence.
+        lastTwoErase = new Queue<string>[2];
+        Queue<string> player1Init = new Queue<string>();
+        player1Init.Enqueue("Empty");
+        player1Init.Enqueue("Empty");
+        Queue<string> player2Init = new Queue<string>();
+        player2Init.Enqueue("Empty");
+        player2Init.Enqueue("Empty");
+        lastTwoErase[0] = player1Init;
+        lastTwoErase[1] = player2Init;
+        ***/
         GenerateBlocks();
     }
 
     void GenerateBlocks()
     {
+        int positionIndex = 0;
         for (int iter = 1; iter < numPlayers+1; iter++)
         {
-             for (float row = 0; row < rows*gapScale; row+=gapScale)
-             {
-                 for (float col = (iter-1) * playerGap; col < columns*gapScale + (iter-1) * playerGap; col+=gapScale)
-                 {
-                     Vector3 spawnPosition = new Vector3(col-xOffset, row-yOffset, 2); // ????????????λ??
-                     GameObject randomBlockPrefab = GetRandomBlockPrefab();
-                     GameObject block = Instantiate(randomBlockPrefab, spawnPosition, Quaternion.identity);
-                     if (block.TryGetComponent(out CubeHover cHover))
-                     {
-                         // Listen to hover event on the element
-                         cHover.OnHoverEnter += HandelMotionHover;
-                         cHover.OnHoverEnter += JoyconController.instance.OnHandHoverEnter;
-                         cHover.playerIndex = iter;
-                         // cHover.OnHoverExit += HandelMotionExit;
-                     }
-                     blocks.Add(block);
-                     blockTags.Add(block.tag);
-                     lastBlockTag = block.tag;
-                 }
-             }           
+            
+            for (float row = 0; row < rows*gapScale; row+=gapScale)
+            {
+                for (float col = (iter-1) * playerGap; col < columns*gapScale + (iter-1) * playerGap; col+=gapScale)
+                {
+                    Vector3 spawnPosition = new Vector3(col-xOffset, row-yOffset, 2); // ????????????λ??
+                    GameObject randomBlockPrefab = GetRandomBlockPrefab();
+                    GameObject block = Instantiate(randomBlockPrefab, spawnPosition, Quaternion.identity);
+                    if (block.TryGetComponent(out CubeHover cHover))
+                    {
+                        // Listen to hover event on the element
+                        cHover.OnHoverEnter += HandelMotionHover;
+                        cHover.OnHoverEnter += JoyconController.instance.OnHandHoverEnter;
+                        cHover.playerIndex = iter;
+                        // cHover.OnHoverExit += HandelMotionExit;
+                    }
+                    block.GetComponent<Block>().SetIndex(positionIndex);
+                    block.GetComponent<Block>().SetPlayer(iter);
+                    positionIndex++;
+                    blocks.Add(block);
+                    blockTags.Add(block.tag);
+                    lastBlockTag = block.tag;
+                  
+                     
+                }
+            }           
         }
 
     }
@@ -113,6 +154,49 @@ public class BlockManager : MonoBehaviour
                 scrFlag2 = true;
             }
         }
+
+        if (!_isFalling)
+        {
+            if (_blocksBin.Count != 0)
+            {
+                foreach (GameObject trashBlock in _blocksBin)
+                {
+                    Destroy(trashBlock);
+                }
+                _blocksBin.Clear();
+/***
+                foreach (GameObject obj in blocks)
+                {
+                    Debug.Log(obj.GetComponent<Block>().GetIndex());
+                }
+***/
+            }
+
+
+            //Change _playerPushedButtonToReleaseSkill to true to use skills
+
+
+            if (_player1PushedButtonToReleaseSkill && _playerSkills[0].Count != 0)
+            {
+                string skill = _playerSkills[0].Dequeue();
+                UsingSkill(skill, 0);
+
+                //Debug.Log("player1 has released skill" + _playerSkills[0].Dequeue());
+            }
+
+            if (_player2PushedButtonToReleaseSkill && _playerSkills[1].Count != 0)
+            {
+                string skill = _playerSkills[1].Dequeue();
+                UsingSkill(skill, 1);
+                //Debug.Log("player2 has released skill" + _playerSkills[1].Dequeue());
+            }
+        }
+
+
+
+
+
+
     }
 
     private bool Erase(int offset)
@@ -195,32 +279,66 @@ public class BlockManager : MonoBehaviour
                 _clicked = false;
                 if(_blockToDelete.tag == clickedObject.tag)
                 {
-                    AddBlocksToFall(_blockToDelete);
-                    AddBlocksToFall(clickedObject);
-                    if(_blocksToFall.Contains(_blockToDelete) || _blocksToFall.Contains(clickedObject))
+
+
+                    //write on the buffer list if the coroutine is working
+
+                    if (!_isFalling)
                     {
-                        _blocksToFall.Add(_blocksToFall[_blocksToFall.Count - 1]);
+                        //if the two blocks are in the same column
+                        AddBlocksToFall(_blockToDelete);
+                        AddBlocksToFall(clickedObject);                                                 
+                        if(_blocksToFall.Contains(_blockToDelete) || _blocksToFall.Contains(clickedObject))
+                        {
+                            _blocksToFall.Add(_blocksToFall[_blocksToFall.Count - 1]);
+                        }
+
+                        if (_blocksToFall.Count != 0) StartFalling();
+                        //Debug.Log(_blocksToFall.Count);
+                        int playerIndex = _blockToDelete.GetComponent<Block>().GetPlayer()-1;
+                        string lastElement = _lastElimination[playerIndex];
+                        if(lastElement == _blockToDelete.tag)
+                        {
+                            _playerSkills[playerIndex].Enqueue(lastElement);
+                            _lastElimination[playerIndex] = "";
+                        }
+                        else
+                        {
+                            _lastElimination[playerIndex] = _blockToDelete.tag;
+                        }
+
+
+                        /***
+                        string lastElement = lastTwoErase[playerIndex].Peek();
+                        string lastlastElement = lastTwoErase[playerIndex].Dequeue();
+                        lastTwoErase[playerIndex].Enqueue(_blockToDelete.tag);
+                        Debug.Log(lastElement + "and" + _blockToDelete.tag);
+                        if(lastElement        == _blockToDelete.tag & 
+                           _blockToDelete.tag == lastTwoErase[playerIndex].Dequeue())
+                        {
+                            Debug.Log("It's about time to have a skill release");
+                        }
+                        ***/
+                        _blockToDelete.SetActive(false);
+                        clickedObject.SetActive(false);
+                        _blocksBin.Add(_blockToDelete);
+                        _blocksBin.Add(clickedObject);
+
+
+                        //Destroy(clickedObject);
+                        //Destroy(_blockToDelete);
                     }
 
-                    if (_blocksToFall.Count != 0) StartFalling();
-                    //Debug.Log(_blocksToFall.Count);
-
-                    _blockToDelete.SetActive(false);
-                    clickedObject.SetActive(false);
-
-
-                    //Destroy(clickedObject);
-                    //Destroy(_blockToDelete);
                 }
             }
 
             // Log the name of the clicked object
-            Debug.Log("Clicked on object: " + clickedObject.name);
+            Debug.Log("Clicked on object: " + clickedObject.GetComponent<Block>().GetIndex());
 
         }
         else
         {
-            Debug.Log("No object hit by the raycast");
+            //Debug.Log("No object hit by the raycast");
         }
     }
 
@@ -230,8 +348,17 @@ public class BlockManager : MonoBehaviour
         if (Physics.Raycast(block.transform.position, Vector3.up, out hit))
         {
             GameObject aboveBlock = hit.collider.gameObject;
-            _blocksToFall.Add(aboveBlock);
-            AddBlocksToFall(aboveBlock);// ????????????壬????????????
+            //write to the buffer list if the coroutine is working
+            if (_isFalling)
+            {
+                _blocksToFallBuffer.Add(aboveBlock);
+            }
+            else
+            {
+                _blocksToFall.Add(aboveBlock);
+            }
+            
+            AddBlocksToFall(aboveBlock);// 
         }
         else
         {
@@ -241,6 +368,8 @@ public class BlockManager : MonoBehaviour
             Vector3 spawnPosition = new Vector3(xPosition, yPosition+gapScale, 2);
             GameObject randomBlockPrefab = GetRandomBlockPrefab();
             GameObject newBlock = Instantiate(randomBlockPrefab, spawnPosition, Quaternion.identity);
+            newBlock.GetComponent<Block>().SetIndex(block.GetComponent<Block>().GetIndex()+columns);
+            newBlock.GetComponent<Block>().SetPlayer(block.GetComponent<Block>().GetPlayer());
             if (newBlock.TryGetComponent(out CubeHover cHover))
             {
                 // Listen to hover event on the element
@@ -249,10 +378,47 @@ public class BlockManager : MonoBehaviour
                 cHover.playerIndex = block.GetComponent<CubeHover>().playerIndex;
                 // cHover.OnHoverExit += HandelMotionExit;
             }
-            _blocksToFall.Add(newBlock);
+            if (_isFalling)
+            {
+                _blocksToFallBuffer.Add(newBlock);
+            }
+            else
+            {
+                _blocksToFall.Add(newBlock);
+            }
         }
 
     }
+
+    public void UsingSkill(string skillname, int player)
+    {
+        switch (skillname)
+        {
+            case "Red"://This is for Zeus
+                break;
+            case "Blue"://This is for Artemis
+                        // Now this will bless on 3 blocks for the player
+                for(int i=0; i < 3; i++)
+                {
+                    int randomIndex = Random.Range(0, 20) + player * rows * columns;
+                    Debug.Log("The "+ i+ " Additional one is "+ randomIndex);
+                    blocks[randomIndex].GetComponent<Block>().AddAdditionalScore(2);
+                }
+                break;
+            case "White":
+                break;
+            case "Green":
+                break;
+            case "Black":
+                break;
+            case "Yellow":
+                break;
+            default:
+                Debug.Log("Unknown Skill, try to change the tag of the prefabs to the correct skill name");
+                break;
+        }
+    }
+
 
     public void StartFalling(float moveDistance = 2f)
     {
@@ -265,9 +431,30 @@ public class BlockManager : MonoBehaviour
         float elapsedTime = 0f;
         Vector3 initialPosition;
 
-        foreach (GameObject obj in _blocksToFall)
+        IEnumerable<GameObject> mergedEnumerable = _blocksToFall.Concat(_blocksToFallBuffer);
+        GameObject[] allBlocksToFall = mergedEnumerable.ToArray();
+        // Reset the blocks to fall
+        _blocksToFall.Clear();
+        _blocksToFallBuffer.Clear();
+
+        while (_isFalling)
+        {
+            yield return null;
+        }
+
+        _isFalling = true;
+        //Debug.Log(allBlocksToFall.Length);
+        int totalBlocks = rows * columns;
+        foreach (GameObject obj in allBlocksToFall)
         {
             initialPosition = obj.transform.position;
+            int newIndex = obj.GetComponent<Block>().GetIndex() - columns;
+            int playerIndex = obj.GetComponent<Block>().GetPlayer();
+            obj.GetComponent<Block>().SetIndex(newIndex);
+            if (newIndex >= (playerIndex-1) * totalBlocks  && newIndex< playerIndex * totalBlocks)
+            {
+                blocks[newIndex] = obj;
+            }
 
             while (elapsedTime < 1f)
             {
@@ -279,7 +466,7 @@ public class BlockManager : MonoBehaviour
             elapsedTime = 0f;
         }
 
-        // ?????????????б?
-        _blocksToFall.Clear();
+        _isFalling = false;
+
     }
 }

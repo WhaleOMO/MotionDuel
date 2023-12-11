@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4632622026635580931}
   - component: {fileID: 6001528298993298725}
   - component: {fileID: -4672781613734977786}
+  - component: {fileID: 4668880172701079362}
   m_Layer: 8
   m_Name: Purple
   m_TagString: Black
@@ -119,3 +120,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerIndex: 0
+--- !u!114 &4668880172701079362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9107678918550379722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 534f3adb19722344b87721eb97060326, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fallSpeed: 5

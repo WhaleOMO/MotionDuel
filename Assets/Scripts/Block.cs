@@ -3,29 +3,55 @@ using UnityEngine;
 public class Block : MonoBehaviour
 {
     public float fallSpeed = 5f; // 下落速度
+    private int _positionindex;
+    private int _playerIndex;//player1 with index 1, and player2 with index2
+    private int _additionalScore = 0;//
+    public ScoreManager scoremanager;
 
-    void Update()
+    public int GetIndex()
     {
-        CheckFall();
+        return _positionindex;
     }
 
-    void CheckFall()
+    public int GetPlayer()
     {
-        // 向下发射射线
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit))
+        return _playerIndex;
+    }
+
+    public void SetIndex(int index)
+    {
+        _positionindex = index;
+    }
+
+    public void SetPlayer(int index)
+    {
+        _playerIndex = index;
+    }
+
+    public void AddAdditionalScore(int additionalScore)
+    {
+        _additionalScore += additionalScore;
+    }
+
+
+    private void OnDestroy()
+    {
+        if (_additionalScore != 0)
         {
-            // 如果下方没有碰撞体，说明需要下落
-            if (hit.collider == null)
+            Debug.Log("this one is being elimatied");
+            switch (_playerIndex)
             {
-                StartFalling();
+                case 1:
+                    ScoreManager.P1score += _additionalScore;
+                    break;
+                case 2:
+                    ScoreManager.P2score += _additionalScore;
+                    break;
             }
+            FindObjectOfType<ScoreManager>().UpdateScore();
         }
     }
 
-    public void StartFalling()
-    {
-        // 下落逻辑
-        transform.Translate(Vector3.down * fallSpeed * Time.deltaTime);
-    }
+
+
 }

@@ -1763,7 +1763,7 @@ MonoBehaviour:
   rows: 5
   columns: 4
   blocks: []
-  moveSpeed: 50
+  moveSpeed: 10
   gapScale: 1.5
   xOffset: 1
   numPlayers: 2
