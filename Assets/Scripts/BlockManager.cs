@@ -15,6 +15,7 @@ public class BlockManager : MonoBehaviour
     public int columns = 5; // ????
     public List<GameObject> blocks;
     public float moveSpeed = 1f;
+    public float swapSpeed = 1f;
     //public float moveDistance = 2f;
     public float gapScale = 1f;
     public float xOffset = 1f;
@@ -71,7 +72,7 @@ public class BlockManager : MonoBehaviour
         }
 
     }
-
+    
     GameObject GetRandomBlockPrefab()
     {
         GameObject randomBlockPrefab = blockPrefabs[Random.Range(0, blockPrefabs.Length)];
@@ -114,7 +115,7 @@ public class BlockManager : MonoBehaviour
             }
         }
     }
-
+    
     private bool Erase(int offset)
     {
         if (hoveredElements[0 + offset] == null || hoveredElements[1 + offset] == null)
