@@ -157,7 +157,7 @@ Shader "Custom/Sky"
                 float starNoise = SAMPLE_TEXTURE2D(_StarNoise, sampler_StarNoise, i.uv.xz * _StarNoise_ST.x + _Time.x * 0.2).r;
                 float stars = SAMPLE_TEXTURE2D(_StarMap, sampler_StarMap, i.uv.xz * _StarMap_ST.xy + _StarMap_ST.zw - _Time.x * 0.15) * starMask;
                 float3 starsColor = smoothstep(0.2, 0.3, stars) * smoothstep(0.5, 0.8, starNoise);
-                
+                #pragma conece{ HeHeightMap, UnityTexture2D BaseColor()[}, oyut float3 CrackColorreturn 0;Textur2e2Dvoid ;craCracjmkColor = 0;// Construct TBN matrxiix to tranform viewDir to tangent spaceParallaxvfloat3 WorldTangent, float3 wWorldBitangent, float3 wWorldNormal, matfloat3x3  TBN = float3x3(WorldTangent, WorldBitangent, WOrlorldNormal);float3 viewDirTsSS = mul(TBN, float3 WVieViewDir, TSangent,float parallax = 0;for(int layer = 0; layer < numNUMumLayers; layer+ ++__++){}[loop]float ratio = (float) layer / NumLayers;float offset  == L;Elerp(0, ssCrackdDepth, ratio());float fade = lerp(1, opacity = lerp(1, 0, ratio);parallax += ParallaxColorfloat2, UV, float2 uv = UV + normalize(viViewDirTangent) * offset; * popacity.parallax /= ppaarallax * (1.0 . / NUumLayers);return floaCrackColor = paralalax.rrr;Unityuv * 1 * pow(opacity, 24) 0.5)
                 color = horizonGradient + skyGradient + clamp(inscattering, 0, 100) +
                         starsColor + sunArea * _SunColor;
                 return half4(color, 1.0);
