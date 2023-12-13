@@ -48,6 +48,8 @@ public class BlockManager : MonoBehaviour
     private string lastBlockTag; // ?????????????????tag
 
     private GameObject[] hoveredElements;
+
+    private string skillCache = "Blue";
     
     private void Start()
     {
@@ -392,6 +394,7 @@ public class BlockManager : MonoBehaviour
 
     public void UsingSkill(string skillname, int player)
     {
+        
         switch (skillname)
         {
             case "Red"://This is for Zeus
@@ -405,18 +408,33 @@ public class BlockManager : MonoBehaviour
                     blocks[randomIndex].GetComponent<Block>().AddAdditionalScore(2);
                 }
                 break;
-            case "White":
+            case "White":// This is for Dionysus
+                UsingSkill(skillCache, player);
                 break;
-            case "Green":
+            case "Green":// This is for Poseidon
                 break;
-            case "Black":
+            case "Black":// This is for Aris
+                for (int i = 0; i < 3; i++)
+                {
+                    int randomIndex = Random.Range(0, 20) + player * rows * columns;
+                    Debug.Log("The " + i + " WildCard one is " + randomIndex);
+                    blocks[randomIndex].GetComponent<Block>().SetWildCard();
+                }
                 break;
-            case "Yellow":
+            case "Yellow":// This is for Demeter
+                for (int i = 0; i < 3; i++)
+                {
+                    int randomIndex = Random.Range(0, 20) + player * rows * columns;
+                    Debug.Log("The " + i + " Frozen one is " + randomIndex);
+                    blocks[randomIndex].GetComponent<Block>().SetBlockFrozen();
+                }
                 break;
             default:
                 Debug.Log("Unknown Skill, try to change the tag of the prefabs to the correct skill name");
                 break;
         }
+        if (skillname != "White")
+            skillCache = skillname;
     }
 
 
