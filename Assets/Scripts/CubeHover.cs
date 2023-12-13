@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR;
 
+
 public class CubeHover : MonoBehaviour
 {
     private GameObject[] hands;
@@ -53,7 +54,7 @@ public class CubeHover : MonoBehaviour
         int handIdx = playerIndex == 1 ? (int)whichHand : (int)whichHand - 2;
         var hand = hands[handIdx];
         Ray ray = new Ray(hand.transform.position, Vector3.forward);
-
+        
         if (collider.Raycast(ray, out var hit, 200))
         {
             if (!isHovering[handIdx])
