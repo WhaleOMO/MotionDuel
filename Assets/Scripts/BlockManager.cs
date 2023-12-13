@@ -13,6 +13,7 @@ public class BlockManager : MonoBehaviour
     public GameObject[] blockPrefabs; // ??????????????
     public int rows = 5; // ????
     public int columns = 4; // ????
+    public int totalBlocks;
     public List<GameObject> blocks;
     public float moveSpeed = 1f;
     //public float moveDistance = 2f;
@@ -26,6 +27,7 @@ public class BlockManager : MonoBehaviour
     public static bool scrFlag2;
 
     public GameObject eraseVFX;
+    public GameObject[] Walls;
     
     private List<string> blockTags; // ?????????λ???????tag
     private GameObject _blockToDelete;
@@ -37,6 +39,7 @@ public class BlockManager : MonoBehaviour
     private List<GameObject> _blocksToFallBuffer;
     private List<GameObject> _blocksBin; //Finally We end up with having a garbage bin
     private string[] _lastElimination;
+    private string[] _lastSkill;
     private Queue<string>[] _playerSkills;
     //private Queue<string>[] lastTwoErase; //Stores the last two elements the player has elimated
 
@@ -51,6 +54,7 @@ public class BlockManager : MonoBehaviour
     
     private void Start()
     {
+        totalBlocks = columns * rows;
         blockTags = new List<string>();
         _blocksToFall = new List<GameObject>();
         _blocksToFallBuffer = new List<GameObject>();
@@ -59,9 +63,14 @@ public class BlockManager : MonoBehaviour
         _lastElimination = new string[2];
         _lastElimination[0] = "";
         _lastElimination[1] = "";
+        _lastSkill = new string[2];
+        _lastSkill[0] = "Random";
+        _lastSkill[1] = "Random";
         _playerSkills = new Queue<string>[2];
         _playerSkills[0] = new Queue<string>();
         _playerSkills[1] = new Queue<string>();
+        Walls[0].transform.localScale = new Vector3((float)columns, (float)rows, 1f);
+        Walls[1].transform.localScale = new Vector3((float)columns, (float)rows, 1f);
 
         /*** This part of the code is for skill released by 3 continues elimenation,
         I changed it into 2 because its too hard to get 3 in a sequence.
@@ -83,7 +92,9 @@ public class BlockManager : MonoBehaviour
         int positionIndex = 0;
         for (int iter = 1; iter < numPlayers+1; iter++)
         {
-            
+            float wallX = ((iter - 1) * playerGap + (columns-1) * gapScale + (iter - 1) * playerGap) / 2 - xOffset;
+            float wallY = (rows-1) * gapScale / 2 - yOffset;
+            Walls[iter-1].transform.position = new Vector3(wallX, wallY, 1);
             for (float row = 0; row < rows*gapScale; row+=gapScale)
             {
                 for (float col = (iter-1) * playerGap; col < columns*gapScale + (iter-1) * playerGap; col+=gapScale)
@@ -177,9 +188,10 @@ public class BlockManager : MonoBehaviour
 
 
             if (_player1PushedButtonToReleaseSkill && _playerSkills[0].Count != 0)
-            {
+            {                
                 string skill = _playerSkills[0].Dequeue();
                 UsingSkill(skill, 0);
+
 
                 //Debug.Log("player1 has released skill" + _playerSkills[0].Dequeue());
             }
@@ -277,7 +289,12 @@ public class BlockManager : MonoBehaviour
             else if(_blockToDelete != clickedObject)
             {
                 _clicked = false;
-                if(_blockToDelete.tag == clickedObject.tag)
+                if((_blockToDelete.tag == clickedObject.tag 
+                    || _blockToDelete.GetComponent<Block>().IsJoker()
+                    || clickedObject.GetComponent<Block>().IsJoker())
+                    && !_blockToDelete.GetComponent<Block>().IsFrozen()
+                    && !clickedObject.GetComponent<Block>().IsFrozen()
+                    )
                 {
 
 
@@ -333,7 +350,7 @@ public class BlockManager : MonoBehaviour
             }
 
             // Log the name of the clicked object
-            Debug.Log("Clicked on object: " + clickedObject.GetComponent<Block>().GetIndex());
+            //Debug.Log("Clicked on object: " + clickedObject.GetComponent<Block>().GetIndex());
 
         }
         else
@@ -392,29 +409,74 @@ public class BlockManager : MonoBehaviour
 
     public void UsingSkill(string skillname, int player)
     {
+        int randomIndex;
+        int oppoPlayer = (player == 0 ? 1 : 0);
         switch (skillname)
         {
-            case "Red"://This is for Zeus
+            case "Red"://This is for Dionysos
+                UsingSkill(_lastSkill[player], player);
                 break;
-            case "Blue"://This is for Artemis
+            case "Blue"://This is for Poseidon
+                Walls[oppoPlayer].SetActive(true);//Wall Raise
+                //It might be good to add an anime for the wall to fall down
+                _lastSkill[player] = "Blue";
+                break;
+            case "White"://This is for Demeter, frozen 3 blocks for oppo                
+                for(int i = 0; i < 3; i++)
+                {
+                    randomIndex = Random.Range(i * 6, (i + 1) * 6)+ oppoPlayer* totalBlocks; //if total blocks change, 6 in this line should also be changed
+                    blocks[randomIndex].GetComponent<Block>().Froze();
+                    Debug.Log("The blocks with index " + randomIndex + " has been frozen");
+                }
+
+
+                _lastSkill[player] = "White";
+                break;
+
+            case "Green"://This is for Artemis
                         // Now this will bless on 3 blocks for the player
                 for(int i=0; i < 3; i++)
                 {
-                    int randomIndex = Random.Range(0, 20) + player * rows * columns;
+                    randomIndex = Random.Range(0, 20) + player * rows * columns;
                     Debug.Log("The "+ i+ " Additional one is "+ randomIndex);
                     blocks[randomIndex].GetComponent<Block>().AddAdditionalScore(2);
                 }
+
+
+                _lastSkill[player] = "Green";
                 break;
-            case "White":
+            case "Black":// This is for Ares
+                randomIndex = Random.Range(0, 8) + player * rows * columns;
+                blocks[randomIndex].GetComponent<Block>().BecomeJoker();
+                Debug.Log("block with index " + randomIndex + " is joker now");
+                randomIndex = Random.Range(8, 16) + player * rows * columns;
+                blocks[randomIndex].GetComponent<Block>().BecomeJoker();
+                Debug.Log("block with index " + randomIndex + " is joker now");
+
+
+                _lastSkill[player] = "Black";
                 break;
-            case "Green":
-                break;
-            case "Black":
-                break;
-            case "Yellow":
+            case "Yellow"://This is for Zeus
+                randomIndex = Random.Range(0, columns)+player * columns * rows;
+                for(int i =0; i< columns; i++)
+                {
+                    GameObject targetObject = blocks[randomIndex + i * (columns + 1)];
+                    AddBlocksToFall(targetObject);
+                    targetObject.SetActive(false);
+                    _blocksBin.Add(targetObject);
+                }
+                StartFalling();
+                _lastSkill[player] = "Yellow";
                 break;
             default:
-                Debug.Log("Unknown Skill, try to change the tag of the prefabs to the correct skill name");
+                Debug.Log("Check for bugs If this is not released by Dionysos");
+                string[] skills = { "Blue", "White", "Green", "Black", "Yellow" };
+
+                // 生成随机索引
+                int tempIndex = Random.Range(0, skills.Length);
+
+                // 从数组中获取随机字符串
+                UsingSkill(skills[tempIndex],player);
                 break;
         }
     }
@@ -469,4 +531,5 @@ public class BlockManager : MonoBehaviour
         _isFalling = false;
 
     }
+
 }
