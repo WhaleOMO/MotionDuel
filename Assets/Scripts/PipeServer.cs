@@ -305,6 +305,7 @@ public class PipeServer : MonoBehaviour
     private void OnDisable()
     {
         print("Client disconnected.");
+        server.Disconnect();
         server.Close();
         server.Dispose();
     }

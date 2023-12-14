@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6001528298993298725}
   - component: {fileID: -4672781613734977786}
   - component: {fileID: 4668880172701079362}
-  m_Layer: 8
+  m_Layer: 6
   m_Name: Purple
   m_TagString: Black
   m_Icon: {fileID: 0}
@@ -133,3 +133,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fallSpeed: 5
+  scoremanager: {fileID: 0}

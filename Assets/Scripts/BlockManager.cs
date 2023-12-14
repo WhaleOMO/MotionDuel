@@ -9,6 +9,7 @@ using Random = UnityEngine.Random;
 
 public class BlockManager : MonoBehaviour
 {
+    public Camera mouseCastCamera;
     public bool noJoyconMode;
     public GameObject[] blockPrefabs; // ??????????????
     public int rows = 5; // ????
@@ -275,7 +276,7 @@ public class BlockManager : MonoBehaviour
 
     void HandleClick()
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray ray = mouseCastCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit))
@@ -414,6 +415,7 @@ public class BlockManager : MonoBehaviour
         switch (skillname)
         {
             case "Red"://This is for Dionysos
+                GameObject.FindObjectOfType<EnvController>().MainCameraShake(2);
                 UsingSkill(_lastSkill[player], player);
                 break;
             case "Blue"://This is for Poseidon
@@ -421,15 +423,14 @@ public class BlockManager : MonoBehaviour
                 //It might be good to add an anime for the wall to fall down
                 _lastSkill[player] = "Blue";
                 break;
-            case "White"://This is for Demeter, frozen 3 blocks for oppo                
+            case "White"://This is for Demeter, frozen 3 blocks for oppo      
                 for(int i = 0; i < 3; i++)
                 {
                     randomIndex = Random.Range(i * 6, (i + 1) * 6)+ oppoPlayer* totalBlocks; //if total blocks change, 6 in this line should also be changed
                     blocks[randomIndex].GetComponent<Block>().Froze();
                     Debug.Log("The blocks with index " + randomIndex + " has been frozen");
                 }
-
-
+                GameObject.FindObjectOfType<EnvController>().FadeInIce(5f);
                 _lastSkill[player] = "White";
                 break;
 
@@ -457,6 +458,7 @@ public class BlockManager : MonoBehaviour
                 _lastSkill[player] = "Black";
                 break;
             case "Yellow"://This is for Zeus
+                GameObject.FindObjectOfType<EnvController>().FadeInThunderWeather(0.5f, 1.5f);
                 randomIndex = Random.Range(0, columns)+player * columns * rows;
                 for(int i =0; i< columns; i++)
                 {

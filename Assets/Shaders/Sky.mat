@@ -46,5 +46,5 @@ Material:
     - _NightHorizonColor: {r: 0.08129911, g: 0, b: 0.3679245, a: 1}
     - _NightMidColor: {r: 0.055538006, g: 0.26653543, b: 1.6055588, a: 1}
     - _NightZenithColor: {r: 0.003921569, g: 0, b: 0.2627451, a: 1}
-    - _SunColor: {r: 21.361254, g: 15.780533, b: 11.016495, a: 1}
+    - _SunColor: {r: 38.937145, g: 28.764647, b: 20.080791, a: 1}
   m_BuildTextureStacks: []

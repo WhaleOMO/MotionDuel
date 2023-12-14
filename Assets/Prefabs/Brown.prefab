@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6001528298993298725}
   - component: {fileID: -7053772091163349904}
   - component: {fileID: -5104185580735934994}
-  m_Layer: 8
+  m_Layer: 6
   m_Name: Brown
   m_TagString: Green
   m_Icon: {fileID: 0}
@@ -133,3 +133,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fallSpeed: 5
+  scoremanager: {fileID: 0}
