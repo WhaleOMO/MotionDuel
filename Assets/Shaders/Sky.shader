@@ -22,8 +22,8 @@ Shader "Custom/Sky"
     
     SubShader
     {
-        Tags { "Queue" = "Opaque" "RenderPipeline" = "UniversalPipeline"}
-        ZWrite Off Cull Off
+        Tags { "Queue"="Background" "RenderType"="Background" "PreviewType"="Skybox" }
+        Cull Off ZWrite Off
         
         Pass
         {

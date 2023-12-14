@@ -54,7 +54,8 @@ MonoBehaviour:
   m_RendererFeatures:
   - {fileID: -1878332245247344467}
   - {fileID: 4811361465963759939}
-  m_RendererFeatureMap: adc0de57c6d2eee543c9c5f8c263c542
+  - {fileID: 545733066783818817}
+  m_RendererFeatureMap: adc0de57c6d2eee543c9c5f8c263c5424184d53355d59207
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -97,6 +98,27 @@ MonoBehaviour:
   m_CopyDepthMode: 0
   m_AccurateGbufferNormals: 0
   m_IntermediateTextureMode: 1
+--- !u!114 &545733066783818817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25a794db87dc53847879f9c623a39973, type: 3}
+  m_Name: ScreenSpaceReflectionRenderFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    injectionPoint: 550
+    ssrShader: {fileID: 4800000, guid: 64708eb8314e9d645930467bb1ac1f16, type: 3}
+    maxSteps: 10
+    maxDistance: 1000
+    thickness: 20
+    reflectionStride: 10
+    reflectionJitter: 5
 --- !u!114 &4811361465963759939
 MonoBehaviour:
   m_ObjectHideFlags: 0
