@@ -72,14 +72,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _ALpha: 1
     - _GlowFalloff: 6
-    - _Metallic: 1
-    - _ParallaxOffset: 0.9
+    - _Metallic: 0
+    - _ParallaxOffset: 0.756
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Smoothness: 0.857
+    - _Smoothness: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 0}
+    - _Color: {r: 0.12322002, g: 0.56348497, b: 0.6698113, a: 0}
     - _GlowCenter: {r: 0, g: 0, b: 0, a: 0}
     - _GlowColor: {r: 0, g: 0.7180824, b: 0.84387034, a: 0}
   m_BuildTextureStacks: []

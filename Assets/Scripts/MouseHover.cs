@@ -38,7 +38,16 @@ public class MouseHover : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 StartCoroutine(DissolveCo());
-                //this.gameObject.SetActive(false);
+
+                Transform[] children = this.gameObject.GetComponentsInChildren<Transform>();
+                
+                foreach (Transform child in children)
+                {
+                    if (child != transform)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                }
                 //Instantiate(EraseVFX, this.gameObject.transform.position, Quaternion.identity);
             }
         }
