@@ -559,6 +559,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0ec6e0102ab4db458c8c635fdaa481f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Material_: {fileID: 2100000, guid: c2945c8ea06023e458fcaf1b5d130988, type: 2}
+  DissolveTime: 20
+  RefreshRate: 0.01
+  ReturnTime: 1
 --- !u!65 &166535137
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -748,6 +752,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0ec6e0102ab4db458c8c635fdaa481f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Material_: {fileID: 2100000, guid: dfee7bcc9d1b94b45bff06bfe948f502, type: 2}
+  DissolveTime: 20
+  RefreshRate: 0.01
+  ReturnTime: 1
 --- !u!65 &231534693
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6282,6 +6290,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0ec6e0102ab4db458c8c635fdaa481f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Material_: {fileID: 2100000, guid: 92ed675dfcc4353459d1402a3486381f, type: 2}
+  DissolveTime: 20
+  RefreshRate: 0.01
+  ReturnTime: 1
 --- !u!65 &1762904294
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11220,6 +11232,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0ec6e0102ab4db458c8c635fdaa481f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Material_: {fileID: 2100000, guid: 6bbf02e55f510bc4ba08778da3bb83e0, type: 2}
+  DissolveTime: 20
+  RefreshRate: 0.01
+  ReturnTime: 1
 --- !u!65 &1820700484
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11622,6 +11638,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0ec6e0102ab4db458c8c635fdaa481f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Material_: {fileID: 2100000, guid: fb7f60bf1eaa5d54faf68770f7b65c49, type: 2}
+  DissolveTime: 20
+  RefreshRate: 0.01
+  ReturnTime: 1
 --- !u!65 &2011921728
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -16722,6 +16742,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0ec6e0102ab4db458c8c635fdaa481f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Material_: {fileID: 2100000, guid: b298a639031b5f2479d68f48665c2464, type: 2}
+  DissolveTime: 20
+  RefreshRate: 0.01
+  ReturnTime: 1
 --- !u!65 &2119074516
 BoxCollider:
   m_ObjectHideFlags: 0
