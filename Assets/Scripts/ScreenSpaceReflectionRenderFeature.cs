@@ -72,7 +72,7 @@ public class ScreenSpaceReflectionRenderFeature : ScriptableRendererFeature
         {
             _timer += Time.deltaTime;
             
-            if (_timer < TimeSpan.FromMilliseconds(20).TotalSeconds)
+            if (_timer < TimeSpan.FromMilliseconds(33).TotalSeconds)
             {
                 return;
             }

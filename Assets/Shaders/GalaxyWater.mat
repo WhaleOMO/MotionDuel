@@ -46,9 +46,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _NormalStrength: 0.5
+    - _NormalStrength: 0.6
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _Saturation: 1
     - _TexScale: 0
     m_Colors:
     - _EmissionTint: {r: 2, g: 2, b: 2, a: 0}

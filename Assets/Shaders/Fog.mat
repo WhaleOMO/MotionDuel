@@ -38,10 +38,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _FogFalloff: 500
+    - _FogFalloff: 597.39514
     - _FogGlobalDensity: 0.066617265
-    - _FogGradientDis: 900
-    - _FogHeight: 1000
+    - _FogGlobalOpacity: 1
+    - _FogGradientDis: 1200
+    - _FogHeight: 1200
     - _FogStartDis: 0
     - _SunFogPower: -0.046950743
     m_Colors:

@@ -132,7 +132,7 @@ Shader "Custom/SSR"
                 if (hit0 == 0)
                 {
                     float2 fragUV = frag / texSize;
-                    return float4(SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, fragUV).rgb,1); 
+                    return float4(0.5 * SAMPLE_TEXTURE2D_X(_BlitTexture, sampler_LinearClamp, fragUV).rgb,1); 
                 }
                 
                 float steps = _MaxSteps * hit0;

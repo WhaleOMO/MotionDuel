@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f62c9c65cf3354c93be831c8bc075510, type: 3}
   m_Name: SSAO
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   m_Settings:
     AOMethod: 1
     Downsample: 0
@@ -53,9 +53,9 @@ MonoBehaviour:
     hdrDebugViewPS: {fileID: 4800000, guid: 573620ae32aec764abd4d728906d2587, type: 3}
   m_RendererFeatures:
   - {fileID: -1878332245247344467}
-  - {fileID: 4811361465963759939}
   - {fileID: 545733066783818817}
-  m_RendererFeatureMap: adc0de57c6d2eee543c9c5f8c263c5424184d53355d59207
+  - {fileID: 4811361465963759939}
+  m_RendererFeatureMap: adc0de57c6d2eee54184d53355d5920743c9c5f8c263c542
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -114,9 +114,9 @@ MonoBehaviour:
   settings:
     injectionPoint: 550
     ssrShader: {fileID: 4800000, guid: 64708eb8314e9d645930467bb1ac1f16, type: 3}
-    maxSteps: 10
-    maxDistance: 1000
-    thickness: 20
+    maxSteps: 5
+    maxDistance: 500
+    thickness: 15
     reflectionStride: 10
     reflectionJitter: 5
 --- !u!114 &4811361465963759939

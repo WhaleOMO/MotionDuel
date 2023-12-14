@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
+using DG.Tweening;
 
 [ExecuteInEditMode]
 public class EnvController : MonoBehaviour
@@ -12,7 +13,7 @@ public class EnvController : MonoBehaviour
     public Camera specCubeCam;
     public Material skyboxMaterial;
     public Material fogMaterial;
-
+    
     [Range(0,1)]public float relativeTimer = 0;
     
     [Header("Sky Control")]
@@ -30,77 +31,125 @@ public class EnvController : MonoBehaviour
     public AnimationCurve fogDensity;
     public AnimationCurve fogFalloff;
     public AnimationCurve fogSunPower;
+    public AnimationCurve envSpecCubeIntensity;
 
+    [Header("Surface Control")] 
+    public AnimationCurve surfaceSaturation;
+    
+    [Header("Thunder Weather")] 
+    [ColorUsage(false,true)]
+    public Color thunderSkyMidColor;
+    [ColorUsage(false,true)] 
+    public Color thunderSkyZenithColor;
+    public Color thunderFogColor;
+    public float thunderFogFalloff;
+    public float thunderFogDensity;
+    
     [Header("Reflection")] 
+    public bool manualUpdate = false;
     public Cubemap skyCube;
     
     private float angle;
     private float lastUpdate;
+    private bool isThunder;
+
+    private static int DayZenithColorID = Shader.PropertyToID("_DayZenithColor");
+    private static int DayMidColorID = Shader.PropertyToID("_DayMidColor");
+    private static int NightZenithColorID = Shader.PropertyToID("_NightZenithColor");
+    private static int NightMidColorID = Shader.PropertyToID("_NightMidColor");
+    private static int FogColorID = Shader.PropertyToID("_FogColor");
+    private static int FogFalloffID = Shader.PropertyToID("_FogFalloff");
+    private static int FogDensityID = Shader.PropertyToID("_FogGlobalDensity");
 
     private void Start()
     {
         relativeTimer = 0;
         angle = 60f;
-        // RenderSettings.defaultReflectionMode = DefaultReflectionMode.Custom;
-        // RenderSettings.customReflectionTexture = skyCube;
-        // UpdateSkyReflection();
+        if (manualUpdate)
+        {
+            RenderSettings.defaultReflectionMode = DefaultReflectionMode.Custom;
+            RenderSettings.customReflectionTexture = skyCube;
+            UpdateSkyReflection();
+        }
+        else
+        {
+            RenderSettings.defaultReflectionMode = DefaultReflectionMode.Skybox;
+        }
         //RenderSettings.ambientMode = AmbientMode.Skybox;
         // RenderSettings.ambientProbe = skySH;
     }
 
     private void UpdateSkyReflection()
     {
-        return;
+        // return;
         specCubeCam.cullingMask = 0;
         // Terrible Performance, only update when necessary, todo: screen space reflection
         {
             specCubeCam.RenderToCubemap(skyCube);
             skyCube.Apply();
+            RenderSettings.customReflectionTexture = skyCube;
         }
         specCubeCam.cullingMask = LayerMask.GetMask("Default", "TransparentFX", "Ignore Raycast", "Water", "UI");
     }
     
     private void Update()
     {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            FadeInThunderWeather(1.0f,2);
+        }
+        
         if (Application.isPlaying)
         {
-            relativeTimer += 0.05f * Time.deltaTime;
-            if (relativeTimer - lastUpdate >= 0.05)
+            relativeTimer += 0.02f * Time.deltaTime;
+            if (manualUpdate)
             {
-                UpdateSkyReflection();
-                lastUpdate = relativeTimer;
+                if (relativeTimer - lastUpdate >= 0.1)
+                {
+                    UpdateSkyReflection();
+                    lastUpdate = relativeTimer;
+                }
             }
         }
 
         angle = 60.0f - Mathf.Lerp(0, 80.0f, relativeTimer);
         mainLight.transform.rotation = Quaternion.Euler(angle, 180.0f, 0f);
-        skyboxMaterial.SetColor(Shader.PropertyToID("_DayZenithColor"), skyZenithColor.Evaluate(relativeTimer));
-        skyboxMaterial.SetColor(Shader.PropertyToID("_DayMidColor"), skyMidColor.Evaluate(relativeTimer));
-        skyboxMaterial.SetColor(Shader.PropertyToID("_NightZenithColor"), skyNightZenithColor.Evaluate(relativeTimer));
-        skyboxMaterial.SetColor(Shader.PropertyToID("_NightMidColor"), skyNightMidColor.Evaluate(relativeTimer));
-        fogMaterial.SetColor(Shader.PropertyToID("_FogColor"), fogColor.Evaluate(relativeTimer));
-        fogMaterial.SetFloat(Shader.PropertyToID("_FogGlobalDensity"), fogDensity.Evaluate(relativeTimer));
-        fogMaterial.SetFloat(Shader.PropertyToID("_FogFalloff"), fogFalloff.Evaluate(relativeTimer));
-        fogMaterial.SetFloat(Shader.PropertyToID("_SunFogPower"), fogSunPower.Evaluate(relativeTimer));
-
-        // DynamicGI.UpdateEnvironment();
-        specCubeCam.cullingMask = LayerMask.GetMask();
-        /* Terrible Performance, not going to use, todo: screen space reflection
+        
+        if (!isThunder)
         {
-            Transform camTransform = specCubeCam.transform;
-            Vector3 originPos = camTransform.position;
-            Quaternion originRot = camTransform.rotation;
-
-            camTransform.position = Vector3.zero;
-            camTransform.rotation = Quaternion.identity;
-
-            specCubeCam.RenderToCubemap(skyCube);
-            skyCube.Apply();
-
-            camTransform.position = originPos;
-            camTransform.rotation = originRot;
+            skyboxMaterial.SetColor(DayZenithColorID, skyZenithColor.Evaluate(relativeTimer));
+            skyboxMaterial.SetColor(DayMidColorID, skyMidColor.Evaluate(relativeTimer));
+            skyboxMaterial.SetColor(NightZenithColorID, skyNightZenithColor.Evaluate(relativeTimer));
+            skyboxMaterial.SetColor(NightMidColorID, skyNightMidColor.Evaluate(relativeTimer));
+            fogMaterial.SetColor(FogColorID, fogColor.Evaluate(relativeTimer));
+            fogMaterial.SetFloat(FogDensityID, fogDensity.Evaluate(relativeTimer));
+            fogMaterial.SetFloat(FogFalloffID, fogFalloff.Evaluate(relativeTimer));
+            fogMaterial.SetFloat(Shader.PropertyToID("_SunFogPower"), fogSunPower.Evaluate(relativeTimer));
+            Shader.SetGlobalFloat(Shader.PropertyToID("_Saturation"), surfaceSaturation.Evaluate(relativeTimer));
         }
-        */
-        specCubeCam.cullingMask = LayerMask.GetMask("Default", "TransparentFX", "Ignore Raycast", "Water", "UI");
+
+        RenderSettings.reflectionIntensity = envSpecCubeIntensity.Evaluate(relativeTimer);
+    }
+
+    public void FadeInThunderWeather(float fade, float dur)
+    {
+        isThunder = true;
+        float multiplier = relativeTimer > 0.75f ? 0.2f : 1.0f;
+        float nightFog = relativeTimer > 0.75f ? 1.2f : 1f;
+        DOTween.Sequence().Append(skyboxMaterial.DOColor(thunderSkyMidColor * multiplier, DayMidColorID, fade))
+            .AppendInterval(dur).SetLoops(2, LoopType.Yoyo).Play();
+        DOTween.Sequence().Append(skyboxMaterial.DOColor(thunderSkyMidColor * multiplier, NightMidColorID, fade))
+            .AppendInterval(dur).SetLoops(2, LoopType.Yoyo).Play();
+        DOTween.Sequence().Append(skyboxMaterial.DOColor(thunderSkyZenithColor * multiplier, DayZenithColorID, fade))
+            .AppendInterval(dur).SetLoops(2, LoopType.Yoyo).Play();
+        DOTween.Sequence().Append(skyboxMaterial.DOColor(thunderSkyZenithColor * multiplier, NightZenithColorID, fade))
+            .AppendInterval(dur).SetLoops(2, LoopType.Yoyo).Play();
+        DOTween.Sequence().Append(fogMaterial.DOColor(thunderFogColor, FogColorID, fade))
+            .AppendInterval(dur).SetLoops(2, LoopType.Yoyo).Play();
+        DOTween.Sequence().Append(fogMaterial.DOFloat(thunderFogDensity * nightFog, FogDensityID, fade))
+            .AppendInterval(dur).SetLoops(2, LoopType.Yoyo).Play();
+        DOTween.Sequence().Append(fogMaterial.DOFloat(thunderFogFalloff * nightFog, FogFalloffID, fade))
+            .AppendInterval(dur).SetLoops(2, LoopType.Yoyo).OnComplete((() => { isThunder = false;})).Play();
+        Shader.SetGlobalFloat(Shader.PropertyToID("_Saturation"), 0);
     }
 }
