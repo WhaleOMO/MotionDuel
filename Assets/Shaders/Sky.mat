@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Sky
+  m_Shader: {fileID: 4800000, guid: 6d846b5bd550ee443a5df93702fb7af6, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StarMap:
+        m_Texture: {fileID: 2800000, guid: e3a66e9074d40704eba4d0774baeb814, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StarNoise:
+        m_Texture: {fileID: 2800000, guid: 32cff126794921542a3bc56520d892f9, type: 3}
+        m_Scale: {x: 3, y: 3}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _SunSize: 0.05
+    m_Colors:
+    - _DayHorizonColor: {r: 0.13333334, g: 0.21176471, b: 0.4509804, a: 1}
+    - _DayMidColor: {r: 0.11764706, g: 0.31764707, b: 0.9254902, a: 1}
+    - _DayZenithColor: {r: 0, g: 0.07058824, b: 0.3764706, a: 1}
+    - _MieScatteringColor: {r: 2.6197767, g: 0.89308906, b: 0, a: 1}
+    - _NightHorizonColor: {r: 0.08129911, g: 0, b: 0.3679245, a: 1}
+    - _NightMidColor: {r: 0.055538006, g: 0.26653543, b: 1.6055588, a: 1}
+    - _NightZenithColor: {r: 0.003921569, g: 0, b: 0.2627451, a: 1}
+    - _SunColor: {r: 21.361254, g: 15.780533, b: 11.016495, a: 1}
+  m_BuildTextureStacks: []
