@@ -4,7 +4,7 @@ using System.Collections;
 
 public class Block : MonoBehaviour
 {
-    public float fallSpeed = 5f; // ÏÂÂäËÙ¶È
+    public float fallSpeed = 5f; // ä¸‹è½é€Ÿåº¦
     public GameObject frozenEffect;
     private int _positionindex;
     private int _playerIndex;//player1 with index 1, and player2 with index2
@@ -75,7 +75,7 @@ public class Block : MonoBehaviour
                     ScoreManager.P2score += _additionalScore;
                     break;
             }
-            FindObjectOfType<ScoreManager>().UpdateScore();
+            scoremanager.UpdateScore();
         }
     }
 

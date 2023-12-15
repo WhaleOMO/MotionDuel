@@ -12,7 +12,8 @@ public class CubeHover : MonoBehaviour
     private Collider collider;
     private MeshRenderer mRenderer;
     private PipeServer pipeServer;
-
+    
+    
     private bool[] isHovering;
     [HideInInspector]public int playerIndex;
 
@@ -21,10 +22,12 @@ public class CubeHover : MonoBehaviour
     public event Action<GameObject, HandEnum> OnHoverEnter;
     public event Action<GameObject, HandEnum> OnHoverStay;
     public event Action<GameObject, HandEnum> OnHoverExit;
+    public Camera overlayCamera;
     
-    private Vector3 rotationVector = new Vector3(0f, 0f, 360f);
+    private Vector3 rotationVector = new Vector3(0f, 360f, 0f);
     private Vector3 orginScale;
     private Quaternion orginRotation;
+    private Tween RotatDoTween;
     
     private void Start()
     {
@@ -42,11 +45,13 @@ public class CubeHover : MonoBehaviour
         originColor = mRenderer.material.GetColor("_Color");
         orginScale = this.gameObject.transform.localScale;
         orginRotation = this.gameObject.transform.rotation;
+        Camera[] allCameras = FindObjectsOfType<Camera>();
+        overlayCamera = allCameras[1];
     }
 
     private void Update()
     {   
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray ray = overlayCamera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit) && hit.collider.gameObject == gameObject)
         {
@@ -57,6 +62,7 @@ public class CubeHover : MonoBehaviour
             if (this.gameObject.transform.rotation != orginRotation)
             {
                 ReturnRotateEffect();
+                RotatDoTween.Kill();                
             }
 
             ReturnScaleEffect();
@@ -118,7 +124,9 @@ public class CubeHover : MonoBehaviour
     void SelectEffect()
     {
         this.gameObject.transform.DOScale(orginScale * 1.5f, 0.5f);
-        this.gameObject.transform.DORotate(rotationVector, 8f, RotateMode.WorldAxisAdd).SetLoops(-1).SetEase(Ease.Linear);
+        RotatDoTween = this.gameObject.transform.DORotate(rotationVector, 8f, RotateMode.WorldAxisAdd).SetLoops(-1).SetEase(Ease.Linear);
+        
+        
     }
 
     void ReturnRotateEffect()
