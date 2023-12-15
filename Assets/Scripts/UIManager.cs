@@ -7,8 +7,10 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
     public Sprite[] imageList;
+    public Sprite[] godsList;
     public BlockManager blockManager;
     public Image sonImage;
+    public GameObject illusImage;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,6 +23,7 @@ public class UIManager : MonoBehaviour
         string skillName = blockManager.GetLastElimation(0);
         if (skillName == "Blue")
         {
+            StartCoroutine(animationPlayer());
             sonImage.sprite = imageList[3];
         }
         else if (skillName == "Red")
@@ -44,5 +47,12 @@ public class UIManager : MonoBehaviour
             sonImage.sprite = imageList[0];
         }
 
+    }
+    IEnumerator animationPlayer()
+    {
+        // illusImage.GetComponent<Image>().sprite = 
+        illusImage.SetActive(true);
+        yield return new WaitForSeconds(3.0f);
+        illusImage.SetActive(false);
     }
 }
