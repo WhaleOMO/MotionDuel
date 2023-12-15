@@ -40,11 +40,11 @@ Material:
     - _SunSize: 0.05
     m_Colors:
     - _DayHorizonColor: {r: 0.13333334, g: 0.21176471, b: 0.4509804, a: 1}
-    - _DayMidColor: {r: 0.11764705, g: 0.31764707, b: 0.9254902, a: 1}
+    - _DayMidColor: {r: 0.11764706, g: 0.31764707, b: 0.9254902, a: 1}
     - _DayZenithColor: {r: 0, g: 0.07058824, b: 0.3764706, a: 1}
     - _MieScatteringColor: {r: 2.6197767, g: 0.89308906, b: 0, a: 1}
     - _NightHorizonColor: {r: 0.08129911, g: 0, b: 0.3679245, a: 1}
-    - _NightMidColor: {r: 0.055538, g: 0.26653543, b: 1.6055588, a: 1}
-    - _NightZenithColor: {r: 0.0039215684, g: 0, b: 0.2627451, a: 1}
+    - _NightMidColor: {r: 0.055538006, g: 0.26653543, b: 1.6055588, a: 1}
+    - _NightZenithColor: {r: 0.003921569, g: 0, b: 0.2627451, a: 1}
     - _SunColor: {r: 38.937145, g: 28.764647, b: 20.080791, a: 1}
   m_BuildTextureStacks: []
