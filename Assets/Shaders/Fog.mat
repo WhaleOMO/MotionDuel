@@ -50,5 +50,5 @@ Material:
     - _ColorNear: {r: 0, g: 0, b: 0, a: 0}
     - _FogColor: {r: 0.4619081, g: 0.6422537, b: 0.8490566, a: 1}
     - _Fog_Start_End: {r: 0, g: 20, b: 0, a: 0}
-    - _LightColor: {r: 1.4980394, g: 0.8331632, b: 0.47579223, a: 1}
+    - _LightColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   m_BuildTextureStacks: []
