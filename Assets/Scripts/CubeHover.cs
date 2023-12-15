@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR;
+using DG.Tweening;
 
 public class CubeHover : MonoBehaviour
 {
@@ -21,6 +22,9 @@ public class CubeHover : MonoBehaviour
     public event Action<GameObject, HandEnum> OnHoverStay;
     public event Action<GameObject, HandEnum> OnHoverExit;
     
+    private Vector3 rotationVector = new Vector3(0f, 0f, 360f);
+    private Vector3 orginScale;
+    private Quaternion orginRotation;
     
     private void Start()
     {
@@ -36,10 +40,28 @@ public class CubeHover : MonoBehaviour
         mRenderer = GetComponent<MeshRenderer>();
         collider = GetComponent<Collider>();
         originColor = mRenderer.material.GetColor("_Color");
+        orginScale = this.gameObject.transform.localScale;
+        orginRotation = this.gameObject.transform.rotation;
     }
 
     private void Update()
-    {
+    {   
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit) && hit.collider.gameObject == gameObject)
+        {
+            SelectEffect();
+        }
+        else
+        {
+            if (this.gameObject.transform.rotation != orginRotation)
+            {
+                ReturnRotateEffect();
+            }
+
+            ReturnScaleEffect();
+        }
+
         var body = playerIndex == 1 ? pipeServer.body2 : pipeServer.body1;
         hands[0] = body.instances[15];
         hands[1] = body.instances[16];
@@ -91,5 +113,21 @@ public class CubeHover : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawRay(lRay);
         Gizmos.DrawRay(rRay);
+    }
+    
+    void SelectEffect()
+    {
+        this.gameObject.transform.DOScale(orginScale * 1.5f, 0.5f);
+        this.gameObject.transform.DORotate(rotationVector, 8f, RotateMode.WorldAxisAdd).SetLoops(-1).SetEase(Ease.Linear);
+    }
+
+    void ReturnRotateEffect()
+    {
+        this.gameObject.transform.DORotateQuaternion(orginRotation, 1f);
+    }
+
+    void ReturnScaleEffect()
+    {
+        this.gameObject.transform.DOScale(orginScale, 0.5f);
     }
 }

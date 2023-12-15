@@ -6,7 +6,8 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.XR;
 using Random = UnityEngine.Random;
-
+using DG.Tweening;
+    
 public class BlockManager : MonoBehaviour
 {
     public Camera mouseCastCamera;
@@ -30,7 +31,8 @@ public class BlockManager : MonoBehaviour
 
     public GameObject eraseVFX;
     public GameObject[] Walls;
-    
+
+    public Material RgbMaterial;
     private List<string> blockTags; // ?????????λ???????tag
     private GameObject _blockToDelete;
 
@@ -52,6 +54,12 @@ public class BlockManager : MonoBehaviour
     private string lastBlockTag; // ?????????????????tag
 
     private GameObject[] hoveredElements;
+    
+    public float DissolveTime = 20f;
+    public float RefreshRate = 0.01f;
+    public float ReturnTime = 1f;
+    
+    private float DissovleRate;
     
     private void Start()
     {
@@ -85,6 +93,9 @@ public class BlockManager : MonoBehaviour
         lastTwoErase[0] = player1Init;
         lastTwoErase[1] = player2Init;
         ***/
+        
+        DissovleRate = 1 / DissolveTime;
+        
         GenerateBlocks();
     }
 
@@ -204,12 +215,7 @@ public class BlockManager : MonoBehaviour
                 //Debug.Log("player2 has released skill" + _playerSkills[1].Dequeue());
             }
         }
-
-
-
-
-
-
+        
     }
 
     private bool Erase(int offset)
@@ -234,6 +240,9 @@ public class BlockManager : MonoBehaviour
             Instantiate(eraseVFX, hoveredElements[0 + offset].transform.position, Quaternion.identity);
             Instantiate(eraseVFX, hoveredElements[1 + offset].transform.position, Quaternion.identity);
             
+            StartCoroutine(DissolveCo(hoveredElements[0 + offset].GetComponent<MeshRenderer>().material));
+            StartCoroutine(DissolveCo(hoveredElements[1 + offset].GetComponent<MeshRenderer>().material));
+            
             hoveredElements[0 + offset].SetActive(false);
             hoveredElements[1 + offset].SetActive(false);
             hoveredElements[0 + offset] = null;
@@ -243,6 +252,20 @@ public class BlockManager : MonoBehaviour
         }
 
         return false;
+    }
+    
+    IEnumerator DissolveCo(Material Material_)
+    {
+        float counter = 0;
+
+        while (Material_.GetFloat("_DissolveAmount") < 1)
+        {
+            counter += DissovleRate;
+            yield return new WaitForSeconds(RefreshRate);
+            Material_.SetFloat("_DissolveAmount", counter);
+        }
+        yield return new WaitForSeconds(ReturnTime);
+        Material_.SetFloat("_DissolveAmount", 0);
     }
     
     /// <summary>
@@ -433,6 +456,12 @@ public class BlockManager : MonoBehaviour
                 {
                     randomIndex = Random.Range(i * 6, (i + 1) * 6)+ oppoPlayer* totalBlocks; //if total blocks change, 6 in this line should also be changed
                     blocks[randomIndex].GetComponent<Block>().Froze();
+                    Transform child = blocks[randomIndex].GetComponent<Block>().transform.Find("Sphere");
+                    if (child != null)
+                    {
+                        GameObject childGameObject = child.gameObject;
+                        childGameObject.SetActive(true);
+                    }
                     Debug.Log("The blocks with index " + randomIndex + " has been frozen");
                 }
                 GameObject.FindObjectOfType<EnvController>().FadeInIce(5f);
@@ -456,9 +485,18 @@ public class BlockManager : MonoBehaviour
                 soundManager.PlaySkillSound(4);
                 randomIndex = Random.Range(0, 8) + player * rows * columns;
                 blocks[randomIndex].GetComponent<Block>().BecomeJoker();
+                Material GlassesMat = Resources.Load<Material>("GlassesMat");
+                if (GlassesMat != null)
+                {
+                    blocks[randomIndex].GetComponent<Block>().GetComponent<MeshRenderer>().material = GlassesMat;
+                }
                 Debug.Log("block with index " + randomIndex + " is joker now");
                 randomIndex = Random.Range(8, 16) + player * rows * columns;
                 blocks[randomIndex].GetComponent<Block>().BecomeJoker();
+                if (GlassesMat != null)
+                {
+                    blocks[randomIndex].GetComponent<Block>().GetComponent<MeshRenderer>().material = GlassesMat;
+                }
                 Debug.Log("block with index " + randomIndex + " is joker now");
 
 

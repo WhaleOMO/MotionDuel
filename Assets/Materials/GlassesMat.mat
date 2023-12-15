@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_Glasses
+  m_Name: GlassesMat
   m_Shader: {fileID: -6465566751694194690, guid: b2238822afc0bf847afdb5a536fa38ed,
     type: 3}
   m_Parent: {fileID: 0}
