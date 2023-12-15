@@ -86,6 +86,11 @@ public class BlockManager : MonoBehaviour
         ***/
         GenerateBlocks();
     }
+    
+    public string GetLastElimation(int playerIndex)
+    {
+        return _lastElimination[playerIndex];
+    }
 
     void GenerateBlocks()
     {
