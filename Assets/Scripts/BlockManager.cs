@@ -372,7 +372,6 @@ public class BlockManager : MonoBehaviour
 
                 }
             }
-
             // Log the name of the clicked object
             //Debug.Log("Clicked on object: " + clickedObject.GetComponent<Block>().GetIndex());
 
@@ -386,7 +385,7 @@ public class BlockManager : MonoBehaviour
     public void AddBlocksToFall(GameObject block)
     { 
         RaycastHit hit;
-        if (Physics.Raycast(block.transform.position, Vector3.up, out hit))
+        if (Physics.Raycast(block.transform.position, Vector3.up, out hit) && hit.collider.gameObject!= block)
         {
             GameObject aboveBlock = hit.collider.gameObject;
             //write to the buffer list if the coroutine is working
@@ -398,7 +397,7 @@ public class BlockManager : MonoBehaviour
             {
                 _blocksToFall.Add(aboveBlock);
             }
-            
+            Debug.Log(block.GetComponent<Block>().GetIndex());
             AddBlocksToFall(aboveBlock);// 
         }
         else
@@ -411,14 +410,8 @@ public class BlockManager : MonoBehaviour
             GameObject newBlock = Instantiate(randomBlockPrefab, spawnPosition, Quaternion.identity);
             newBlock.GetComponent<Block>().SetIndex(block.GetComponent<Block>().GetIndex()+columns);
             newBlock.GetComponent<Block>().SetPlayer(block.GetComponent<Block>().GetPlayer());
-            if (newBlock.TryGetComponent(out CubeHover cHover))
-            {
-                // Listen to hover event on the element
-                cHover.OnHoverEnter += HandelMotionHover;
-                cHover.OnHoverEnter += JoyconController.instance.OnHandHoverEnter;
-                cHover.playerIndex = block.GetComponent<CubeHover>().playerIndex;
-                // cHover.OnHoverExit += HandelMotionExit;
-            }
+            
+
             if (_isFalling)
             {
                 _blocksToFallBuffer.Add(newBlock);
@@ -474,6 +467,12 @@ public class BlockManager : MonoBehaviour
                 for (int i=0; i < 3; i++)
                 {
                     randomIndex = Random.Range(0, 20) + player * rows * columns;
+                    Transform child = blocks[randomIndex].GetComponent<Block>().transform.Find("crosshair");
+                    if (child != null)
+                    {
+                        GameObject childGameObject = child.gameObject;
+                        childGameObject.SetActive(true);
+                    }
                     Debug.Log("The "+ i+ " Additional one is "+ randomIndex);
                     blocks[randomIndex].GetComponent<Block>().AddAdditionalScore(2);
                 }
@@ -485,18 +484,11 @@ public class BlockManager : MonoBehaviour
                 soundManager.PlaySkillSound(4);
                 randomIndex = Random.Range(0, 8) + player * rows * columns;
                 blocks[randomIndex].GetComponent<Block>().BecomeJoker();
-                Material GlassesMat = Resources.Load<Material>("GlassesMat");
-                if (GlassesMat != null)
-                {
-                    blocks[randomIndex].GetComponent<Block>().GetComponent<MeshRenderer>().material = GlassesMat;
-                }
+                blocks[randomIndex].GetComponent<MeshRenderer>().material = RgbMaterial;
                 Debug.Log("block with index " + randomIndex + " is joker now");
                 randomIndex = Random.Range(8, 16) + player * rows * columns;
                 blocks[randomIndex].GetComponent<Block>().BecomeJoker();
-                if (GlassesMat != null)
-                {
-                    blocks[randomIndex].GetComponent<Block>().GetComponent<MeshRenderer>().material = GlassesMat;
-                }
+                blocks[randomIndex].GetComponent<MeshRenderer>().material = RgbMaterial;
                 Debug.Log("block with index " + randomIndex + " is joker now");
 
 
