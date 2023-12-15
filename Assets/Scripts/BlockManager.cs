@@ -537,6 +537,7 @@ public class BlockManager : MonoBehaviour
         // Reset the blocks to fall
         _blocksToFall.Clear();
         _blocksToFallBuffer.Clear();
+        soundManager.PlayBrokenSound();
 
         while (_isFalling)
         {
