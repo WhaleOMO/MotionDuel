@@ -224,36 +224,50 @@ public class BlockManager : MonoBehaviour
         {
             return false;
         }
-        
-        if (hoveredElements[0 + offset].CompareTag(hoveredElements[1 + offset].tag))
+
+        if (hoveredElements[0 + offset] != hoveredElements[1 + offset])
         {
-            AddBlocksToFall(hoveredElements[0 + offset]);
-            AddBlocksToFall(hoveredElements[1 + offset]);
-            if(_blocksToFall.Contains(hoveredElements[0 + offset]) || _blocksToFall.Contains(hoveredElements[1 + offset]))
+            if ((hoveredElements[0 + offset].CompareTag(hoveredElements[1 + offset].tag)
+                || hoveredElements[0 + offset].GetComponent<Block>().IsJoker()
+                || hoveredElements[1 + offset].GetComponent<Block>().IsJoker())
+                && !hoveredElements[0 + offset].GetComponent<Block>().IsFrozen()
+                && !hoveredElements[1 + offset].GetComponent<Block>().IsFrozen()
+                    )
             {
-                _blocksToFall.Add(_blocksToFall[_blocksToFall.Count - 1]);
+                if (!_isFalling)
+                {
+                    AddBlocksToFall(hoveredElements[0 + offset]);
+                    AddBlocksToFall(hoveredElements[1 + offset]);
+                    if (_blocksToFall.Contains(hoveredElements[0 + offset]) || _blocksToFall.Contains(hoveredElements[1 + offset]))
+                    {
+                        _blocksToFall.Add(_blocksToFall[_blocksToFall.Count - 1]);
+                    }
+
+                    if (_blocksToFall.Count != 0) StartFalling();
+                    //Debug.Log(_blocksToFall.Count);
+
+                    Instantiate(eraseVFX, hoveredElements[0 + offset].transform.position, Quaternion.identity);
+                    Instantiate(eraseVFX, hoveredElements[1 + offset].transform.position, Quaternion.identity);
+
+                    StartCoroutine(DissolveCo(hoveredElements[0 + offset].GetComponent<MeshRenderer>().material));
+                    StartCoroutine(DissolveCo(hoveredElements[1 + offset].GetComponent<MeshRenderer>().material));
+
+                    hoveredElements[0 + offset].SetActive(false);
+                    hoveredElements[1 + offset].SetActive(false);
+                    hoveredElements[0 + offset] = null;
+                    hoveredElements[1 + offset] = null;
+                    return true;
+
+                }
+
             }
-
-            if (_blocksToFall.Count != 0) StartFalling();
-            //Debug.Log(_blocksToFall.Count);
-
-            Instantiate(eraseVFX, hoveredElements[0 + offset].transform.position, Quaternion.identity);
-            Instantiate(eraseVFX, hoveredElements[1 + offset].transform.position, Quaternion.identity);
-            
-            StartCoroutine(DissolveCo(hoveredElements[0 + offset].GetComponent<MeshRenderer>().material));
-            StartCoroutine(DissolveCo(hoveredElements[1 + offset].GetComponent<MeshRenderer>().material));
-            
-            hoveredElements[0 + offset].SetActive(false);
-            hoveredElements[1 + offset].SetActive(false);
-            hoveredElements[0 + offset] = null;
-            hoveredElements[1 + offset] = null;
-            SoundManager.instance.PlayBrokenSound();
-            return true;
         }
+
 
         return false;
     }
-    
+
+
     IEnumerator DissolveCo(Material Material_)
     {
         float counter = 0;

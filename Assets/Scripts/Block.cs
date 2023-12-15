@@ -5,6 +5,7 @@ using System.Collections;
 public class Block : MonoBehaviour
 {
     public float fallSpeed = 5f; // œ¬¬‰ÀŸ∂»
+    public GameObject frozenEffect;
     private int _positionindex;
     private int _playerIndex;//player1 with index 1, and player2 with index2
     private int _additionalScore = 0;//
@@ -80,7 +81,14 @@ public class Block : MonoBehaviour
 
     IEnumerator Melting(float delay)
     {
+
         yield return new WaitForSeconds(delay);
+        Transform child = this.GetComponent<Block>().transform.Find("Sphere");
+        if (child != null)
+        {
+            GameObject childGameObject = child.gameObject;
+            childGameObject.SetActive(false);
+        }
         _isFrozen = false;
         //Remove the effect to defrozen here
     }
