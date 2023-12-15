@@ -11,8 +11,10 @@ public class SoundManager : MonoBehaviour
     public AudioClip brokenSound;
     public AudioClip bgmMusic;
     public AudioClip[] skillSoundClip;
+    public float initialPitch = 0.5f;
 
-    private AudioSource _audioSource;
+    public AudioSource _audioSource;
+    public AudioSource _brokenSource;
 
     private void Awake()
     {
@@ -33,7 +35,13 @@ public class SoundManager : MonoBehaviour
 
     public void PlayBrokenSound()
     {
-        _audioSource.PlayOneShot(brokenSound);
+        if(initialPitch > 1.5f)
+        {
+            initialPitch = 0.5f;
+        }
+        _brokenSource.pitch = initialPitch;
+        _brokenSource.PlayOneShot(brokenSound);
+        initialPitch += 0.2f;
     }
 
     public void PlaySkillSound(int skillIndex)
