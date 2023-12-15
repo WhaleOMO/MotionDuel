@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1123190541651494758}
   - component: {fileID: 743838741914858696}
   - component: {fileID: 3735668063901822756}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Landmark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -118,7 +118,7 @@ GameObject:
   - component: {fileID: 3189734821234685969}
   - component: {fileID: 3331611759239800655}
   - component: {fileID: 4827352109706324180}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Quad
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -51,22 +51,22 @@ public class CubeHover : MonoBehaviour
 
     private void Update()
     {   
-        Ray ray = overlayCamera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit) && hit.collider.gameObject == gameObject)
-        {
-            SelectEffect();
-        }
-        else
-        {
-            if (this.gameObject.transform.rotation != orginRotation)
-            {
-                ReturnRotateEffect();
-                RotatDoTween.Kill();                
-            }
-
-            ReturnScaleEffect();
-        }
+        // Ray ray = overlayCamera.ScreenPointToRay(Input.mousePosition);
+        // RaycastHit hit;
+        // if (Physics.Raycast(ray, out hit) && hit.collider.gameObject == gameObject)
+        // {
+        //     SelectEffect();
+        // }
+        // else
+        // {
+        //     if (this.gameObject.transform.rotation != orginRotation)
+        //     {
+        //         ReturnRotateEffect();
+        //         RotatDoTween.Kill();                
+        //     }
+        //
+        //     ReturnScaleEffect();
+        // }
 
         var body = playerIndex == 1 ? pipeServer.body2 : pipeServer.body1;
         hands[0] = body.instances[15];
@@ -89,7 +89,8 @@ public class CubeHover : MonoBehaviour
                 // mRenderer.material.color = Color.cyan; // for debug
                 isHovering[handIdx] = true;
                 OnHoverEnter?.Invoke(this.gameObject, whichHand);
-                mRenderer.material.SetColor("_Color", originColor * 5f);
+                // mRenderer.material.SetColor("_Color", originColor * 5f);
+                SelectEffect();
                 return;
             }
             
@@ -101,8 +102,9 @@ public class CubeHover : MonoBehaviour
             {
                 // mRenderer.material.color = Color.white;  
                 isHovering[handIdx] = false;
-                mRenderer.material.SetColor("_Color", originColor);
+                // mRenderer.material.SetColor("_Color", originColor);
                 // On Hover Exit
+                ReturnScaleEffect();
                 OnHoverExit?.Invoke(this.gameObject, whichHand);
             }
         }

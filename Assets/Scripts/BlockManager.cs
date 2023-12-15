@@ -120,7 +120,7 @@ public class BlockManager : MonoBehaviour
                         cHover.OnHoverEnter += HandelMotionHover;
                         cHover.OnHoverEnter += JoyconController.instance.OnHandHoverEnter;
                         cHover.playerIndex = iter;
-                        // cHover.OnHoverExit += HandelMotionExit;
+                        cHover.OnHoverExit += HandelMotionExit;
                     }
                     block.GetComponent<Block>().SetIndex(positionIndex);
                     block.GetComponent<Block>().SetPlayer(iter);
@@ -163,7 +163,7 @@ public class BlockManager : MonoBehaviour
             Debug.Log("P1 Erase!");
             if (Erase(0))
             {
-                joyconCon.RestKeyState(0, false);
+                // joyconCon.RestKeyState(0, false);
                 scrFlag1 = true;
             }
         }
@@ -173,7 +173,7 @@ public class BlockManager : MonoBehaviour
             Debug.Log("P2 Erase!");
             if (Erase(2))
             {
-                joyconCon.RestKeyState(1, false);
+                // joyconCon.RestKeyState(1, false);
                 scrFlag2 = true;
             }
         }
