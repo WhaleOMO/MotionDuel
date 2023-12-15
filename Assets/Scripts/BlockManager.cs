@@ -45,7 +45,6 @@ public class BlockManager : MonoBehaviour
     private Queue<string>[] _playerSkills;
     //private Queue<string>[] lastTwoErase; //Stores the last two elements the player has elimated
 
-
     private bool _isFalling = false;
 
     private bool _clicked = false;
