@@ -28,6 +28,8 @@ public class BlockManager : MonoBehaviour
 
     public GameObject eraseVFX;
     public GameObject[] Walls;
+
+    public Animator godUIAnimator;
     
     private List<string> blockTags; // ?????????λ???????tag
     private GameObject _blockToDelete;
@@ -412,10 +414,17 @@ public class BlockManager : MonoBehaviour
 
     }
 
+    void ResetGodUIAnimation()
+    {
+        godUIAnimator.SetBool("show", false);
+    }
+    
     public void UsingSkill(string skillname, int player)
     {
         int randomIndex;
         int oppoPlayer = (player == 0 ? 1 : 0);
+        godUIAnimator.SetBool("show", true);
+        Invoke("ResetGodUIAnimation", 0.1f);
         switch (skillname)
         {
             case "Red"://This is for Dionysos

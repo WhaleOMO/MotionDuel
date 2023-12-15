@@ -171,7 +171,7 @@ Animator:
   m_GameObject: {fileID: 9566883}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 21e2dbc3aeac65640860dd3c67915f1f, type: 2}
+  m_Controller: {fileID: 9100000, guid: 0c9cddde77e070849bac5417c89241e2, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -406,6 +406,7 @@ MonoBehaviour:
   godsList: []
   blockManager: {fileID: 0}
   sonImage: {fileID: 0}
+  godImage: {fileID: 0}
   illusImage: {fileID: 0}
 --- !u!114 &307943681
 MonoBehaviour:
@@ -746,6 +747,7 @@ MonoBehaviour:
   godsList: []
   blockManager: {fileID: 1285567681}
   sonImage: {fileID: 1842596060}
+  godImage: {fileID: 0}
   illusImage: {fileID: 0}
 --- !u!114 &432223664
 MonoBehaviour:
@@ -2383,6 +2385,7 @@ MonoBehaviour:
   Walls:
   - {fileID: 2063471850}
   - {fileID: 783516914}
+  godUIAnimator: {fileID: 9566885}
 --- !u!1 &1285962615
 GameObject:
   m_ObjectHideFlags: 0
@@ -3282,6 +3285,7 @@ MonoBehaviour:
   godsList: []
   blockManager: {fileID: 0}
   sonImage: {fileID: 0}
+  godImage: {fileID: 0}
   illusImage: {fileID: 0}
 --- !u!114 &1842596060
 MonoBehaviour:

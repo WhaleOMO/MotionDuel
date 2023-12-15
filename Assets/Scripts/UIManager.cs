@@ -10,6 +10,7 @@ public class UIManager : MonoBehaviour
     public Sprite[] godsList;
     public BlockManager blockManager;
     public Image sonImage;
+    public Image godImage;
     public GameObject illusImage;
     // Start is called before the first frame update
     void Start()
@@ -23,31 +24,36 @@ public class UIManager : MonoBehaviour
         string skillName = blockManager.GetLastElimation(0);
         if (skillName == "Blue")
         {
-            StartCoroutine(animationPlayer());
             sonImage.sprite = imageList[3];
+            godImage.sprite = godsList[3];
         }
         else if (skillName == "Red")
         {
             sonImage.sprite = imageList[5];
+            godImage.sprite = godsList[5];
         }
         else if (skillName == "White")
         {
             sonImage.sprite = imageList[4];
+            godImage.sprite = godsList[4];
         }
         else if (skillName == "Yellow")
         {
             sonImage.sprite = imageList[2];
+            godImage.sprite = godsList[2];
         }
         else if (skillName == "Black")
         {
             sonImage.sprite = imageList[1];
+            godImage.sprite = godsList[1];
         }
         else if (skillName == "Green")
         {
             sonImage.sprite = imageList[0];
+            godImage.sprite = godsList[0];
         }
-
     }
+    
     IEnumerator animationPlayer()
     {
         // illusImage.GetComponent<Image>().sprite = 
