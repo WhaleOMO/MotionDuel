@@ -23,6 +23,7 @@ public class BlockManager : MonoBehaviour
     public int numPlayers = 2;
     public float playerGap = 13f;
     public float yOffset;
+    public SoundManager soundManager;
 
     public static bool scrFlag1;
     public static bool scrFlag2;
@@ -412,19 +413,24 @@ public class BlockManager : MonoBehaviour
     {
         int randomIndex;
         int oppoPlayer = (player == 0 ? 1 : 0);
+        string[] skills = { "Blue", "White", "Green", "Black", "Yellow" };
+        Debug.Log(skillname);
         switch (skillname)
         {
             case "Red"://This is for Dionysos
+                soundManager.PlaySkillSound(0);
                 GameObject.FindObjectOfType<EnvController>().MainCameraShake(2);
                 UsingSkill(_lastSkill[player], player);
                 break;
             case "Blue"://This is for Poseidon
+                soundManager.PlaySkillSound(1);
                 Walls[oppoPlayer].SetActive(true);//Wall Raise
                 //It might be good to add an anime for the wall to fall down
                 _lastSkill[player] = "Blue";
                 break;
             case "White"://This is for Demeter, frozen 3 blocks for oppo      
-                for(int i = 0; i < 3; i++)
+                soundManager.PlaySkillSound(2);
+                for (int i = 0; i < 3; i++)
                 {
                     randomIndex = Random.Range(i * 6, (i + 1) * 6)+ oppoPlayer* totalBlocks; //if total blocks change, 6 in this line should also be changed
                     blocks[randomIndex].GetComponent<Block>().Froze();
@@ -435,8 +441,9 @@ public class BlockManager : MonoBehaviour
                 break;
 
             case "Green"://This is for Artemis
-                        // Now this will bless on 3 blocks for the player
-                for(int i=0; i < 3; i++)
+                         // Now this will bless on 3 blocks for the player
+                soundManager.PlaySkillSound(3);
+                for (int i=0; i < 3; i++)
                 {
                     randomIndex = Random.Range(0, 20) + player * rows * columns;
                     Debug.Log("The "+ i+ " Additional one is "+ randomIndex);
@@ -447,6 +454,7 @@ public class BlockManager : MonoBehaviour
                 _lastSkill[player] = "Green";
                 break;
             case "Black":// This is for Ares
+                soundManager.PlaySkillSound(4);
                 randomIndex = Random.Range(0, 8) + player * rows * columns;
                 blocks[randomIndex].GetComponent<Block>().BecomeJoker();
                 Debug.Log("block with index " + randomIndex + " is joker now");
@@ -458,6 +466,7 @@ public class BlockManager : MonoBehaviour
                 _lastSkill[player] = "Black";
                 break;
             case "Yellow"://This is for Zeus
+                soundManager.PlaySkillSound(5);
                 GameObject.FindObjectOfType<EnvController>().FadeInThunderWeather(0.5f, 1.5f);
                 randomIndex = Random.Range(0, columns)+player * columns * rows;
                 for(int i =0; i< columns; i++)
@@ -472,7 +481,6 @@ public class BlockManager : MonoBehaviour
                 break;
             default:
                 Debug.Log("Check for bugs If this is not released by Dionysos");
-                string[] skills = { "Blue", "White", "Green", "Black", "Yellow" };
 
                 // 生成随机索引
                 int tempIndex = Random.Range(0, skills.Length);
