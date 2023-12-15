@@ -657,7 +657,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 0ecfeab54e27d344fbea1ca838174cd0, type: 3}
   - {fileID: 21300000, guid: cf29f12bab263b64c8dd1070a6087c57, type: 3}
   - {fileID: 21300000, guid: 2249876a269868346bed8762def729fa, type: 3}
-  sonImage: {fileID: 213932354}
+  sonImage: {fileID: 1801935406}
   playerIndex: 0
 --- !u!114 &213932354
 MonoBehaviour:
@@ -1993,7 +1993,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1178827021}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 44d24d3dd190ce1489db2f91b5ab8db9, type: 3}
   m_Name: 
@@ -3028,7 +3028,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 0ecfeab54e27d344fbea1ca838174cd0, type: 3}
   - {fileID: 21300000, guid: cf29f12bab263b64c8dd1070a6087c57, type: 3}
   - {fileID: 21300000, guid: 2249876a269868346bed8762def729fa, type: 3}
-  sonImage: {fileID: 1801935406}
+  sonImage: {fileID: 213932354}
   playerIndex: 1
 --- !u!114 &1609030346
 MonoBehaviour:
