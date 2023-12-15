@@ -98,7 +98,10 @@ public class BlockManager : MonoBehaviour
         
         GenerateBlocks();
     }
-
+    public string GetSkillName(int index)
+    {
+        return _lastElimination[index];
+    }
     void GenerateBlocks()
     {
         int positionIndex = 0;
