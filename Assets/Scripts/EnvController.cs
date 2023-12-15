@@ -170,11 +170,15 @@ public class EnvController : MonoBehaviour
 
     public void FadeInIce(float dur)
     {
-        iceMaterial.DOFloat(1.0f, Shader.PropertyToID("_IceAmount"), dur/2).SetLoops(2, LoopType.Yoyo);
+        iceMaterial.DOFloat(1.0f, Shader.PropertyToID("_IceAmount"), dur/4)
+            .OnComplete((() =>
+            {
+                iceMaterial.DOFloat(0.0f, Shader.PropertyToID("_IceAmount"), dur / 4).SetDelay(dur/2);
+            }));
         fullScreenIceMaterial.DOFloat(1.0f, Shader.PropertyToID("_Bright"), 0.3f)
             .OnComplete((() =>
             {
-                fullScreenIceMaterial.DOFloat(0f, Shader.PropertyToID("_Bright"), 0.3f).SetDelay(dur-0.6f);
+                fullScreenIceMaterial.DOFloat(0f, Shader.PropertyToID("_Bright"), 0.3f).SetDelay(dur-1);
             }));
         //     .AppendInterval(dur - 0.6f).SetLoops(2, LoopType.Yoyo)
         // iceSequence.Append(iceMaterial.DOFloat(1.0f, Shader.PropertyToID("_IceAmount"), dur)).SetLoops(2, LoopType.Yoyo);

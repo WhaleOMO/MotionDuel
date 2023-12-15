@@ -49,6 +49,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 88d09650653e6684ea0e6c3760eae45e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _IceCells:
+        m_Texture: {fileID: 2800000, guid: 88d09650653e6684ea0e6c3760eae45e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _NormalMap:
         m_Texture: {fileID: 2800000, guid: 8245f53aa8bec314da7522994b173648, type: 3}
         m_Scale: {x: 1, y: 1}
